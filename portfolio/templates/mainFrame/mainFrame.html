@@ -3,6 +3,12 @@
 {% block title %}<title>KJ Chow home</title>{% endblock %}
 
 {% block content %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'personal.css' %}">
+    <div class="personal-container">
+        <div class="personal-background"></div>
+        <img class="personal-img" src="{{ MEDIA_URl }}/personal/profilePic.png"/>
+    </div>
     {% if user %}
         Hello, Master {{ name }}!
     {% else %}

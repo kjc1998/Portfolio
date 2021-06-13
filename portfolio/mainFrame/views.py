@@ -1,6 +1,7 @@
 from django.shortcuts import render
-from django.http import HttpResponse
 
 
-def mainFrame(request):
-    return HttpResponse("Hello World!")
+def mainFrame(request, name="kai jie"):
+    return render(request, "mainFrame/mainFrame.html", {
+        "name": name.title(),
+    })

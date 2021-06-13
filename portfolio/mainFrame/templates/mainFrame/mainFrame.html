@@ -3,6 +3,10 @@
     <head>
     </head>
     <body>
-        Hello {{ name }}!
+        {% if user %}
+            Hello, Master {{ name }}!
+        {% else %}
+            Hello {{ name }}!
+        {% endif %}
     </body>
 </html>

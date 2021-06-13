@@ -1,0 +1,9 @@
+{% extends "navigationBar.html" %}
+{% block content %}
+
+    {% if user %}
+        Hello, Master {{ name }}!
+    {% else %}
+        Hello {{ name }}!
+    {% endif %}
+{% endblock %}

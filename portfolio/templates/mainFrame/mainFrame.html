@@ -1,9 +1,16 @@
-{% extends "navigationBar.html" %}
-{% block content %}
+{% extends "defaultTemplate.html" %}
 
+{% block title %}<title>KJ Chow home</title>{% endblock %}
+
+{% block content %}
     {% if user %}
         Hello, Master {{ name }}!
     {% else %}
         Hello {{ name }}!
     {% endif %}
+
+    <h1>About</h1>
+    <h1>Experience</h1>
+    <h1>Projects</h1>
+    <h1>CV</h1>
 {% endblock %}

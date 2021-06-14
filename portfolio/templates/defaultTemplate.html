@@ -6,7 +6,8 @@
 		<meta name="viewport" content="width=device-width, initial-scale=0.7, user-scalable=no">
 		{% load static %}
 		<link rel="stylesheet" href="{% static 'css/main.css' %}" />
-		<link rel="stylesheet" href="{% static 'css/segThree.css' %}">
+		<link rel="stylesheet" href="{% static 'css/sideBar.css' %}" />
+		<link rel="stylesheet" href="{% static 'css/contactFooter.css' %}">
 		<link rel="stylesheet" href="{% static 'css/navBar.css' %}">
 		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCkATxRRNWgIy-Qn5tT6rhvgMn9uZZF_2M"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -24,18 +25,19 @@
 			<div class="inner">
 				<img class="image avatar" src="{{ MEDIA_URl }}/personal/profilePic.png" alt="" />
 				<h1><strong><em>"I strive to bring automation into engineering applicable grounds"</em></strong></h1>
+				{% block sidebar %}{% endblock %}
 			</div>
 		</header>
 
 		<div id="main">
 			{% block content %}{% endblock %}
-			<section id="three">
+			<section id="contactFooter">
 				<h2>Get In Touch</h2>
 				<p>Accumsan pellentesque commodo blandit enim arcu non at amet id arcu magna. Accumsan orci faucibus id eu lorem semper nunc nisi lorem vulputate lorem neque lorem ipsum dolor.</p>
 				<div class="row">
 
 
-					<div id="three-left">
+					<div id="contactFooter-left">
 						<form method="post">
 							<div class="row gtr-uniform gtr-50">
 								<div class="col-12 col-12-xsmall"><input type="text" name="name" id="name" placeholder="Name" /></div>
@@ -49,30 +51,30 @@
 					</div>
 
 
-					<div id="three-right">
-						<div class="three-logo-div labeled-icons">
+					<div id="contactFooter-right">
+						<div class="contactFooter-logo-div labeled-icons">
 							<a target="_blank" href="https://www.linkedin.com/in/kai-jie-chow-506763183/">
-								<img class="three-logo-img" src="{{ MEDIA_URl }}/three/linkedIn.png"/>
+								<img class="contactFooter-logo-img" src="{{ MEDIA_URl }}/contactFooter/linkedIn.png"/>
 							</a>
 						</div>
-						<div class="three-logo-div">
+						<div class="contactFooter-logo-div">
 							<a target="_blank" href="https://github.com/kjc1998/">
-								<img class="three-logo-img" src="{{ MEDIA_URl }}/three/gitHub.png"/>
+								<img class="contactFooter-logo-img" src="{{ MEDIA_URl }}/contactFooter/gitHub.png"/>
 							</a>
 						</div>
-						<div class="three-logo-div">
+						<div class="contactFooter-logo-div">
 							<a target="_blank" href="mailto:kj1chow@gmail.com">
-								<img class="three-logo-img" src="{{ MEDIA_URl }}/three/mail.png"/>
+								<img class="contactFooter-logo-img" src="{{ MEDIA_URl }}/contactFooter/mail.png"/>
 							</a>
 						</div>
-						<div class="three-logo-div">
+						<div class="contactFooter-logo-div">
 							<a target="_blank" href="tel:+447716288854">
-								<img class="three-logo-img" src="{{ MEDIA_URl }}/three/call.png"/>
+								<img class="contactFooter-logo-img" src="{{ MEDIA_URl }}/contactFooter/call.png"/>
 							</a>
 							<span style="font-size:25px">+447716288854</span>
 						</div>
 
-						<div class="three-address-div">
+						<div class="contactFooter-address-div">
 							<h2>Address</h2>
 							<a target="_blank" href="//maps.google.com/maps?f=d&amp; daddr=50.929896199999995, -1.3922295999999998&amp; hl=en">Get Directions</a>
 							<div id="map-canvas" class="footer-logo-map"></div>

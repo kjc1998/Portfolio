@@ -1,0 +1,18 @@
+#contactFooter .contactFooter-logo-div {
+  margin: 0 0 20px;
+  width: 60px;
+}
+
+#contactFooter .contactFooter-address-div h2 {
+  margin: 0 0 10px !important;
+}
+
+#contactFooter .contactFooter-logo-img {
+  display: block;
+  width: 60px;
+  height: auto;
+}
+
+#contactFooter-right {
+  min-width: 500px;
+}

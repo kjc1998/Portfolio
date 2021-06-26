@@ -17,8 +17,7 @@
     <!-- One -->
     <section id="experience">
         <header class="major">
-            <h2>Ipsum lorem dolor aliquam ante commodo<br />
-            magna sed accumsan arcu neque.</h2>
+            <h2>Experience</h2>
         </header>
         <p>Accumsan orci faucibus id eu lorem semper. Eu ac iaculis ac nunc nisi lorem vulputate lorem neque cubilia ac in adipiscing in curae lobortis tortor primis integer massa adipiscing id nisi accumsan pellentesque commodo blandit enim arcu non at amet id arcu magna. Accumsan orci faucibus id eu lorem semper nunc nisi lorem vulputate lorem neque cubilia.</p>
         <ul class="actions">
@@ -28,7 +27,9 @@
 
     <!-- Two -->
     <section id="projects">
-        <h2>Recent Work</h2>
+        <header class="major">
+            <h2>Recent Work</h2>
+        </header>
         <div class="row">
             <article class="col-6 col-12-xsmall work-item">
                 <a href="{{ MEDIA_URl }}/projects/fulls/01.jpg" class="image fit thumb"><img src="{{ MEDIA_URl }}/projects/thumbs/01.jpg" alt="" /></a>
@@ -68,6 +69,15 @@
 
     <!-- Three -->
     <section id="cv">
-        <iframe src="{{ MEDIA_URl }}/cv/CV_KaiJieChow.pdf" width="100%" height="500px"></iframe>
+        <header class="major">
+            <h2>Curriculum Vitae</h2>
+        </header>
+        <p><a href="{{ Media_URL }}/cv/CV_KaiJieChow.pdf">View Full Screen</a></p>
+        <div id="cvDiv">
+            <iframe
+                id="cvKaiJie"
+                src="{{ Media_URL }}/cv/CV_KaiJieChow.pdf"
+            ></iframe>
+        </div>
     </section>
 {% endblock %}

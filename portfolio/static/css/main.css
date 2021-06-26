@@ -3289,3 +3289,15 @@ body.is-touch .poptrox-popup .closer {
     padding-left: 0;
   }
 }
+#cvDiv {
+  display: flex;
+  position: relative;
+  width: 100%;
+  margin: auto;
+}
+#cvKaiJie {
+  display: inline-block;
+  margin: auto;
+  width: 70%;
+  height: 500px;
+}

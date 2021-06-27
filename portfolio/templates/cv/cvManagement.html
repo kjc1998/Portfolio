@@ -1,0 +1,35 @@
+{% extends "defaultTemplate.html" %}
+
+{% block title %}<title>KJ Chow CV</title>{% endblock %}
+
+{% block content %}
+    <header class="major">
+        <h2>CV Management</h2>
+    </header>
+    <form action="#">
+        <table>
+            <tr>
+                <th>CV</th>
+                <th>Active</th>
+            </tr>
+
+            <tr>
+                <td>
+                    <section id="cv">
+                        <p><a href="{{ Media_URL }}/cv/CV_KaiJieChow.pdf">View Full Screen</a></p>
+                        <div id="cvDiv">
+                            <iframe
+                                id="cvKaiJie"
+                                src="{{ Media_URL }}/cv/CV_KaiJieChow.pdf"
+                            ></iframe>
+                        </div>
+                    </section>
+                </td>
+                <td>
+                    <input type="radio" id="html" name="fav_language" value="HTML">
+                    <label for="html"></label>
+                </td>
+            </tr>
+        </table>
+    </form>
+{% endblock %}

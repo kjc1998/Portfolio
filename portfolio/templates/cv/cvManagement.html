@@ -16,12 +16,8 @@
             <tr>
                 <td>
                     <section id="cv">
-                        <p><a href="{{ Media_URL }}/cv/CV_KaiJieChow.pdf">View Full Screen</a></p>
                         <div id="cvDiv">
-                            <iframe
-                                id="cvKaiJie"
-                                src="{{ Media_URL }}/cv/CV_KaiJieChow.pdf"
-                            ></iframe>
+                            <iframe id="cvKaiJie"></iframe>
                         </div>
                     </section>
                 </td>
@@ -32,4 +28,34 @@
             </tr>
         </table>
     </form>
+
+    <!-- base64 to Blob -->
+    <script>
+        const b64toBlob = (b64Data, contentType = '', sliceSize = 512) => {
+            const byteCharacters = atob(b64Data);
+            const byteArrays = [];
+
+            for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+                const slice = byteCharacters.slice(offset, offset + sliceSize),
+                    byteNumbers = new Array(slice.length);
+                for (let i = 0; i < slice.length; i++) {
+                    byteNumbers[i] = slice.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+
+                byteArrays.push(byteArray);
+            }
+
+            const blob = new Blob(byteArrays, {
+                type: contentType
+            });
+            return blob;
+        };
+        const contentType = "application/pdf";
+        var b64Data = "{{cv_encode}}";
+        var blob = b64toBlob(b64Data, contentType);
+        var blobUrl = URL.createObjectURL(blob);
+        const iframeEle = document.getElementById("cvDiv");
+        iframeEle.src = blobUrl;
+    </script>
 {% endblock %}

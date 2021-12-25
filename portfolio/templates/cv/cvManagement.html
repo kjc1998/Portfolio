@@ -55,7 +55,7 @@
         var b64Data = "{{cv_encode}}";
         var blob = b64toBlob(b64Data, contentType);
         var blobUrl = URL.createObjectURL(blob);
-        const iframeEle = document.getElementById("cvDiv");
+        const iframeEle = document.getElementById("cvKaiJie");
         iframeEle.src = blobUrl;
     </script>
 {% endblock %}

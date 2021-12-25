@@ -72,7 +72,7 @@
         <header class="major">
             <h2>Curriculum Vitae</h2>
         </header>
-        <p><a href="{{ Media_URL }}/cv/CV_KaiJieChow.pdf">View Full Screen</a></p>
+        <p><a id="cvFullScreen">View Full Screen</a></p>
         <div id="cvDiv">
             <iframe
                 id="cvKaiJie"
@@ -106,8 +106,12 @@
         var b64Data = "{{cv_encode}}";
         var blob = b64toBlob(b64Data, contentType);
         var blobUrl = URL.createObjectURL(blob);
+
         const iframeEle = document.getElementById("cvKaiJie");
         iframeEle.src = blobUrl;
+
+        const cvFullScreenEle = document.getElementById("cvFullScreen");
+        cvFullScreenEle.href = blobUrl;
     </script>
 {% endblock %}
 

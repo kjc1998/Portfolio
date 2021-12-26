@@ -12,9 +12,17 @@
         <header class="major">
             <h2>Upload</h2>
         </header>
-        <form action="/action_page.php">
-            <input type="file" id="cvFile" name="cvFileUpload">
-            <input type="submit">
+        <form action="{% url 'cv:cvManagement' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input 
+                type="file"
+                id="cvFileUpload"
+                name="cvFileUpload"
+                accept="application/pdf"
+            >
+            <input 
+                type="submit"
+            >
         </form>
     </section>
 
@@ -30,7 +38,7 @@
             </tr>
 
             <tr>
-                <td>Date object</td>
+                <td><p id="cvDate"></p></td>
                 <td>
                     <section id="cv">
                         <div id="cvDiv">
@@ -39,7 +47,7 @@
                     </section>
                 </td>
                 <td>
-                    <input type="radio" id="html" name="fav_language" value="HTML">
+                    <input type="radio" id="html" name="fav_language" value="HTML" checked>
                     <label for="html"></label>
                 </td>
             </tr>
@@ -68,8 +76,14 @@
             });
             return blob;
         };
+        var cv_files = JSON.parse("{{ cv_files|escapejs }}");
         const contentType = "application/pdf";
-        var b64Data = "{{cv_encode}}";
+        // date handling
+        var cvDate = cv_files[1][0]
+        const dateEle = document.getElementById("cvDate");
+        dateEle.innerHTML = cvDate;
+
+        var b64Data = cv_files[1][1];
         var blob = b64toBlob(b64Data, contentType);
         var blobUrl = URL.createObjectURL(blob);
         const iframeEle = document.getElementById("cvKaiJie");

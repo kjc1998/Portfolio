@@ -103,7 +103,7 @@
             return blob;
         };
         const contentType = "application/pdf";
-        var b64Data = "{{cv_encode}}";
+        var b64Data = "{{ cv_active_b64 }}";
         var blob = b64toBlob(b64Data, contentType);
         var blobUrl = URL.createObjectURL(blob);
 

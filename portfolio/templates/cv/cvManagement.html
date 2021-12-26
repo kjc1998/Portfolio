@@ -4,9 +4,24 @@
 
 {% block content %}
     <header class="major">
-        <h2>CV Management</h2>
+        <h2>CV</h2>
     </header>
-    <form action="#">
+
+    <!-- One -->
+    <section id="cvUpload">
+        <header class="major">
+            <h2>Upload</h2>
+        </header>
+        <form action="/action_page.php">
+            <input type="file" id="cvFile" name="cvFileUpload">
+            <input type="submit">
+        </form>
+    </section>
+
+    <section id="cvVersions">
+        <header class="major">
+            <h2>Versions</h2>
+        </header>
         <table>
             <tr>
                 <th>Date</th>
@@ -29,7 +44,7 @@
                 </td>
             </tr>
         </table>
-    </form>
+    </section>
 
     <!-- base64 to Blob -->
     <script>

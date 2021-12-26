@@ -1,6 +1,6 @@
-import os
 import base64
 from django.shortcuts import render
+from .models import CV_VERSION
 
 
 def cvManagement(request, name="kai jie"):
@@ -12,4 +12,5 @@ def cvManagement(request, name="kai jie"):
         "name": name.title(),
         "user": user,
         "cv_encode": cv_encode,
+        "cv_files": CV_VERSION.objects.all()
     })

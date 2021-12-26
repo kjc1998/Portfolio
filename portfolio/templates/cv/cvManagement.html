@@ -19,10 +19,12 @@
                 id="cvFileUpload"
                 name="cvFileUpload"
                 accept="application/pdf"
-            >
+                required
+            />
             <input 
                 type="submit"
-            >
+                name="cvUploadName"
+            />
         </form>
     </section>
 
@@ -88,5 +90,12 @@
         var blobUrl = URL.createObjectURL(blob);
         const iframeEle = document.getElementById("cvKaiJie");
         iframeEle.src = blobUrl;
+    </script>
+    <!-- alerts -->
+    <script>
+        var error_message = "{{ error_message }}";
+        if(error_message){
+            alert(error_message);
+        };
     </script>
 {% endblock %}

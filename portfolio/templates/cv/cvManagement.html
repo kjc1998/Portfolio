@@ -45,7 +45,6 @@
         var cv_files = JSON.parse("{{ cv_files|escapejs }}");
         var table = document.getElementById("cvTable");
         const contentType = "application/pdf";
-        // function
         const b64toBlob = (b64Data, contentType = "", sliceSize = 512) => {
             const byteCharacters = atob(b64Data);
             const byteArrays = [];
@@ -68,32 +67,40 @@
         };
         
         for (const [key, _] of Object.entries(cv_files)) {
-            //name handling
+            // data handling
             var cvName = cv_files[key][0]
-            // date handling
             var cvDate = cv_files[key][1]
-            // pdf handling
             var b64Data = cv_files[key][2];
             var blob = b64toBlob(b64Data, contentType);
             var blobUrl = URL.createObjectURL(blob);
-            // active handling
             var activeCV = cv_files[key][3];
 
             // row handling
             var row = table.insertRow(1);
-
             var cell_1 = row.insertCell(0);
             cell_1.innerHTML = `<p>${cvName}</p><p>${cvDate}</p>`
-
             var cell_2 = row.insertCell(1);
-            cell_2.innerHTML = `<section><a href=${blobUrl}>View Full Screen</a><div><iframe id=cv_${key} style='display:none;' src=${blobUrl}></iframe></div><p style="cursor:pointer" onclick="iframeExpand(${key})">Show/Hide</p></section>`
-
+            cell_2.innerHTML = `
+                <section>
+                    <a href=${blobUrl}>View Full Screen</a>
+                    <div>
+                        <iframe id=cv_${key} style='display:none;' src=${blobUrl}></iframe>
+                    </div>
+                    <p style="cursor:pointer" onclick="iframeExpand(${key})">Show/Hide</p>
+                </section>`
             var cell_3 = row.insertCell(2);
             if(activeCV){
                 cell_3.innerHTML = `Active`
             }else{
-                cell_3.innerHTML = `<form action="{% url 'cv:cvManagement' %}" method="POST"><button name="activateCV" value="${key}">{% csrf_token %}Activate</button></form>`
-                cell_3.innerHTML += `<form action="{% url 'cv:cvManagement' %}" method="POST"><button name="deleteCV" value="${key}">{% csrf_token %}Delete</button></form>`
+                cell_3.innerHTML = `
+                <form action="{% url 'cv:cvManagement' %}" method="POST">
+                    {% csrf_token %}
+                    <button name="activateCV" value="${key}">Activate</button>
+                </form>
+                <form action="{% url 'cv:cvManagement' %}" method="POST">
+                    {% csrf_token %}
+                    <button name="deleteCV" value="${key}">Delete</button>
+                </form>`
             }
         }
     </script>
@@ -103,7 +110,7 @@
         if ( window.history.replaceState ) {
             window.history.replaceState( null, null, window.location.href );
         }
-        // expanding iframe
+        // show/hide iframe
         function iframeExpand(string_id){
             iframeEle = document.getElementById(`cv_${string_id}`);
             if(iframeEle.style.display=="none"){

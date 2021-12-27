@@ -40,39 +40,21 @@
             </tr>
         </table>
     </section> 
-    <!-- base64 to Blob -->
+
+    <!-- DOM utils -->
     <script>
+
+        /* TABLE ADJUSTMENT */
         var cv_files = JSON.parse("{{ cv_files|escapejs }}");
         var table = document.getElementById("cvTable");
         const contentType = "application/pdf";
-        const b64toBlob = (b64Data, contentType = "", sliceSize = 512) => {
-            const byteCharacters = atob(b64Data);
-            const byteArrays = [];
-
-            for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-                const slice = byteCharacters.slice(offset, offset + sliceSize),
-                    byteNumbers = new Array(slice.length);
-                for (let i = 0; i < slice.length; i++) {
-                    byteNumbers[i] = slice.charCodeAt(i);
-                }
-                const byteArray = new Uint8Array(byteNumbers);
-
-                byteArrays.push(byteArray);
-            }
-
-            const blob = new Blob(byteArrays, {
-                type: contentType
-            });
-            return blob;
-        };
         
         for (const [key, _] of Object.entries(cv_files)) {
             // data handling
             var cvName = cv_files[key][0]
             var cvDate = cv_files[key][1]
             var b64Data = cv_files[key][2];
-            var blob = b64toBlob(b64Data, contentType);
-            var blobUrl = URL.createObjectURL(blob);
+            var b64DataSrc = `data:application/pdf;base64,${b64Data}`;
             var activeCV = cv_files[key][3];
 
             // row handling
@@ -82,11 +64,17 @@
             var cell_2 = row.insertCell(1);
             cell_2.innerHTML = `
                 <section>
-                    <a href=${blobUrl}>View Full Screen</a>
+                    <a onclick="openNewTab('${b64DataSrc}')">View Full Screen</a>
                     <div>
-                        <iframe id=cv_${key} style='display:none;' src=${blobUrl}></iframe>
+                        <object
+                            id=cv_${key}
+                            style='display:none;'
+                            type="application/pdf"
+                            class="internal"
+                            data=${b64DataSrc}
+                        ></object>
                     </div>
-                    <p style="cursor:pointer" onclick="iframeExpand(${key})">Show/Hide</p>
+                    <p class="cPointer" onclick="objectExpand(${key})">Show/Hide</p>
                 </section>`
             var cell_3 = row.insertCell(2);
             if(activeCV){
@@ -103,20 +91,20 @@
                 </form>`
             }
         }
-    </script>
-    <!-- alerts, expand and refresh -->
-    <script>
+    
+        
+        /* Other Functionalities */
         // page refresh does not resubmit data
         if ( window.history.replaceState ) {
             window.history.replaceState( null, null, window.location.href );
         }
-        // show/hide iframe
-        function iframeExpand(string_id){
-            iframeEle = document.getElementById(`cv_${string_id}`);
-            if(iframeEle.style.display=="none"){
-                iframeEle.style.display = "block";
+        // show/hide object
+        function objectExpand(string_id){
+            objectEle = document.getElementById(`cv_${string_id}`);
+            if(objectEle.style.display=="none"){
+                objectEle.style.display = "block";
             }else{
-                iframeEle.style.display = "none";
+                objectEle.style.display = "none";
             }
         }
         // alert
@@ -124,5 +112,10 @@
         if(error_message){
             alert(error_message);
         };
+        // new tab
+        function openNewTab(URI){
+            var win = window.open();
+            win.document.write(`<object width=100% height=100% data="${URI}"></object>`);
+        }
     </script>
 {% endblock %}

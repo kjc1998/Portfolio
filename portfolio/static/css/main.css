@@ -216,6 +216,7 @@ a:hover {
   border-bottom-color: transparent;
   color: #49bf9d !important;
   text-decoration: none;
+  cursor: pointer;
 }
 
 strong,
@@ -3300,4 +3301,13 @@ body.is-touch .poptrox-popup .closer {
   margin: auto;
   width: 70%;
   height: 500px;
+}
+
+/* User Defined */
+.cPointer {
+  text-decoration: underline;
+}
+.cPointer:hover {
+  cursor: pointer;
+  text-decoration: none;
 }

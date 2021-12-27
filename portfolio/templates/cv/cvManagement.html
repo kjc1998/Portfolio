@@ -32,33 +32,21 @@
         <header class="major">
             <h2>Versions</h2>
         </header>
-        <table>
+        <table id="cvTable">
             <tr>
                 <th>Date</th>
                 <th>CV</th>
                 <th>Active</th>
             </tr>
-
-            <tr>
-                <td><p id="cvDate"></p></td>
-                <td>
-                    <section id="cv">
-                        <div id="cvDiv">
-                            <iframe id="cvKaiJie"></iframe>
-                        </div>
-                    </section>
-                </td>
-                <td>
-                    <input type="radio" id="html" name="fav_language" value="HTML" checked>
-                    <label for="html"></label>
-                </td>
-            </tr>
         </table>
-    </section>
-
+    </section> 
     <!-- base64 to Blob -->
     <script>
-        const b64toBlob = (b64Data, contentType = '', sliceSize = 512) => {
+        var cv_files = JSON.parse("{{ cv_files|escapejs }}");
+        var table = document.getElementById("cvTable");
+        const contentType = "application/pdf";
+        // function
+        const b64toBlob = (b64Data, contentType = "", sliceSize = 512) => {
             const byteCharacters = atob(b64Data);
             const byteArrays = [];
 
@@ -78,21 +66,53 @@
             });
             return blob;
         };
-        var cv_files = JSON.parse("{{ cv_files|escapejs }}");
-        const contentType = "application/pdf";
-        // date handling
-        var cvDate = cv_files[1][0]
-        const dateEle = document.getElementById("cvDate");
-        dateEle.innerHTML = cvDate;
+        
+        for (const [key, _] of Object.entries(cv_files)) {
+            //name handling
+            var cvName = cv_files[key][0]
+            // date handling
+            var cvDate = cv_files[key][1]
+            // pdf handling
+            var b64Data = cv_files[key][2];
+            var blob = b64toBlob(b64Data, contentType);
+            var blobUrl = URL.createObjectURL(blob);
+            // active handling
+            var activeCV = cv_files[key][3];
 
-        var b64Data = cv_files[1][1];
-        var blob = b64toBlob(b64Data, contentType);
-        var blobUrl = URL.createObjectURL(blob);
-        const iframeEle = document.getElementById("cvKaiJie");
-        iframeEle.src = blobUrl;
+            // row handling
+            var row = table.insertRow(1);
+
+            var cell_1 = row.insertCell(0);
+            cell_1.innerHTML = `<p>${cvName}</p><p>${cvDate}</p>`
+
+            var cell_2 = row.insertCell(1);
+            cell_2.innerHTML = `<section><a href=${blobUrl}>View Full Screen</a><div><iframe id=cv_${key} style='display:none;' src=${blobUrl}></iframe></div><p style="cursor:pointer" onclick="iframeExpand(${key})">Show/Hide</p></section>`
+
+            var cell_3 = row.insertCell(2);
+            if(activeCV){
+                cell_3.innerHTML = `Active`
+            }else{
+                cell_3.innerHTML = `<form action="{% url 'cv:cvManagement' %}" method="POST"><button name="activateCV" value="${key}">{% csrf_token %}Activate</button></form>`
+                cell_3.innerHTML += `<form action="{% url 'cv:cvManagement' %}" method="POST"><button name="deleteCV" value="${key}">{% csrf_token %}Delete</button></form>`
+            }
+        }
     </script>
-    <!-- alerts -->
+    <!-- alerts, expand and refresh -->
     <script>
+        // page refresh does not resubmit data
+        if ( window.history.replaceState ) {
+            window.history.replaceState( null, null, window.location.href );
+        }
+        // expanding iframe
+        function iframeExpand(string_id){
+            iframeEle = document.getElementById(`cv_${string_id}`);
+            if(iframeEle.style.display=="none"){
+                iframeEle.style.display = "block";
+            }else{
+                iframeEle.style.display = "none";
+            }
+        }
+        // alert
         var error_message = "{{ error_message }}";
         if(error_message){
             alert(error_message);

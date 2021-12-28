@@ -3,6 +3,7 @@
 {% block title %}<title>KJ Chow CV</title>{% endblock %}
 
 {% block content %}
+{% if request.user.is_authenticated %}
     <header class="major">
         <h2>CV</h2>
     </header>
@@ -28,76 +29,84 @@
         </form>
     </section>
 
-    <section id="cvVersions">
-        <header class="major">
-            <h2>Versions</h2>
-        </header>
-        <table id="cvTable">
-            <tr>
-                <th>Date</th>
-                <th>CV</th>
-                <th>Active</th>
-            </tr>
-        </table>
-    </section> 
+    {% if cv_files is not none %}
+        <section id="cvVersions">
+            <header class="major">
+                <h2>Versions</h2>
+            </header>
+            <table id="cvTable">
+                <tr>
+                    <th>Date</th>
+                    <th>CV</th>
+                    <th>Active</th>
+                </tr>
+            </table>
+        </section> 
+    {% endif %}
 
     <!-- DOM utils -->
     <script>
 
         /* TABLE ADJUSTMENT */
-        var cv_files = JSON.parse("{{ cv_files|escapejs }}");
-        var table = document.getElementById("cvTable");
-        const contentType = "application/pdf";
-        
-        for (const [key, _] of Object.entries(cv_files)) {
-            // data handling
-            var cvName = cv_files[key][0]
-            var cvDate = cv_files[key][1]
-            var b64Data = cv_files[key][2];
-            var b64DataSrc = `data:application/pdf;base64,${b64Data}`;
-            var activeCV = cv_files[key][3];
+        var cv_files_check = "{{ cv_files }}";
+        if(cv_files_check != "None"){
+            var cv_files = JSON.parse("{{ cv_files|escapejs }}");
+            var table = document.getElementById("cvTable");
+            const contentType = "application/pdf";
+            
+            for (const [key, _] of Object.entries(cv_files)) {
+                // data handling
+                var cvName = cv_files[key][0];
+                var cvDate = cv_files[key][1];
+                var b64Data = cv_files[key][2];
+                var b64DataSrc = `data:application/pdf;base64,${b64Data}`;
+                var activeCV = cv_files[key][3];
 
-            // row handling
-            var row = table.insertRow(1);
-            var cell_1 = row.insertCell(0);
-            cell_1.innerHTML = `<p>${cvName}</p><p>${cvDate}</p>`
-            var cell_2 = row.insertCell(1);
-            cell_2.innerHTML = `
-                <section>
-                    <a onclick="openNewTab('${b64DataSrc}')">View Full Screen</a>
-                    <div>
-                        <object
-                            id=cv_${key}
-                            style='display:none;'
-                            type="application/pdf"
-                            class="internal"
-                            data=${b64DataSrc}
-                        ></object>
-                    </div>
-                    <p class="cPointer" onclick="objectExpand(${key})">Show/Hide</p>
-                </section>`
-            var cell_3 = row.insertCell(2);
-            if(activeCV){
-                cell_3.innerHTML = `Active`
-            }else{
-                cell_3.innerHTML = `
-                <form action="{% url 'cv:cvManagement' %}" method="POST">
-                    {% csrf_token %}
-                    <button name="activateCV" value="${key}">Activate</button>
-                </form>
-                <form action="{% url 'cv:cvManagement' %}" method="POST">
-                    {% csrf_token %}
-                    <button name="deleteCV" value="${key}">Delete</button>
-                </form>`
+                // row handling
+                var row = table.insertRow(1);
+                var cell_1 = row.insertCell(0);
+                cell_1.innerHTML = `<p>${cvName}</p><p>${cvDate}</p>`;
+                var cell_2 = row.insertCell(1);
+                cell_2.innerHTML = `
+                    <section>
+                        <a onclick="openNewTab('${b64DataSrc}')">View Full Screen</a>
+                        <div>
+                            <object
+                                id=cv_${key}
+                                style='display:none;'
+                                type="application/pdf"
+                                class="internal"
+                                data=${b64DataSrc}
+                            ></object>
+                        </div>
+                        <p class="cPointer" onclick="objectExpand(${key})">Show/Hide</p>
+                    </section>`;
+                var cell_3 = row.insertCell(2);
+                if(activeCV){
+                    cell_3.innerHTML = `
+                        Active
+                        <form action="{% url 'cv:cvManagement' %}" method="POST">
+                            {% csrf_token %}
+                            <button name="deleteCV" value="${key}">Delete</button>
+                        </form>
+                        `;
+                }else{
+                    cell_3.innerHTML = `
+                        <form action="{% url 'cv:cvManagement' %}" method="POST">
+                            {% csrf_token %}
+                            <button name="activateCV" value="${key}">Activate</button>
+                        </form>
+                        <form action="{% url 'cv:cvManagement' %}" method="POST">
+                            {% csrf_token %}
+                            <button name="deleteCV" value="${key}">Delete</button>
+                        </form>`;
+                }
             }
         }
     
         
         /* Other Functionalities */
-        // page refresh does not resubmit data
-        if ( window.history.replaceState ) {
-            window.history.replaceState( null, null, window.location.href );
-        }
+        
         // show/hide object
         function objectExpand(string_id){
             objectEle = document.getElementById(`cv_${string_id}`);
@@ -107,15 +116,11 @@
                 objectEle.style.display = "none";
             }
         }
-        // alert
-        var error_message = "{{ error_message }}";
-        if(error_message){
-            alert(error_message);
-        };
         // new tab
         function openNewTab(URI){
             var win = window.open();
             win.document.write(`<object width=100% height=100% data="${URI}"></object>`);
         }
     </script>
+{% endif %}
 {% endblock %}

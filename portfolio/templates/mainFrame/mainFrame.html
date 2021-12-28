@@ -67,37 +67,39 @@
         </ul>
     </section>
 
-    <!-- Three -->
-    <section id="cv">
-        <header class="major">
-            <h2>Curriculum Vitae</h2>
-        </header>
-        <p><a id="cvFullScreen">View Full Screen</a></p>
-        <div id="cvDiv">
-            <object
-                id="cvKaiJie"
-                type="application/pdf"
-                class="internal"
-            ></object>
-        </div>
-    </section>
+    {% if cv_active_b64 is not none %}
+        <!-- Three -->
+        <section id="cv">
+            <header class="major">
+                <h2>Curriculum Vitae</h2>
+            </header>
+            <p><a id="cvFullScreen">View Full Screen</a></p>
+            <div id="cvDiv">
+                <object
+                    id="cvKaiJie"
+                    type="application/pdf"
+                    class="internal"
+                ></object>
+            </div>
+        </section>
     
-    <!-- DOM utils -->
-    <script>
-        const contentType = "application/pdf";
-        var b64Data = "{{ cv_active_b64 }}";
-        var b64DataSrc = `data:application/pdf;base64,${b64Data}`
+        <!-- DOM utils -->
+        <script>
+            const contentType = "application/pdf";
+            var b64Data = "{{ cv_active_b64 }}";
+            var b64DataSrc = `data:application/pdf;base64,${b64Data}`
 
-        const iframeEle = document.getElementById("cvKaiJie");
-        iframeEle.data = b64DataSrc;
+            const iframeEle = document.getElementById("cvKaiJie");
+            iframeEle.data = b64DataSrc;
 
-        const cvFullScreenEle = document.getElementById("cvFullScreen");
+            const cvFullScreenEle = document.getElementById("cvFullScreen");
 
-        cvFullScreenEle.onclick = ()=>{
-            var win = window.open();
-            win.document.write(`<object width=100% height=100% data="${b64DataSrc}"></object>`);
-        };
-    </script>
+            cvFullScreenEle.onclick = ()=>{
+                var win = window.open();
+                win.document.write(`<object width=100% height=100% data="${b64DataSrc}"></object>`);
+            };
+        </script>
+    {% endif %}
 {% endblock %}
 
 {% block contactFooter %}

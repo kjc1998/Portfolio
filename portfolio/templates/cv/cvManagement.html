@@ -41,7 +41,14 @@
                     <th>Active</th>
                 </tr>
             </table>
-        </section> 
+        </section>
+        
+        <!-- Pagination -->
+        <div id="pagination">
+            {% for i in pages %}
+                <a href="{% url 'cv:cvManagement' %}?page={{ i }}">{{ i }}</a>
+            {% endfor %}
+        </div>
     {% endif %}
 
     <!-- DOM utils -->

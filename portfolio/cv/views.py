@@ -4,7 +4,6 @@ import datetime
 from django.shortcuts import render
 from django.core.paginator import Paginator
 from django.db.utils import IntegrityError
-from django.http import JsonResponse
 from .models import CVS
 
 
@@ -13,7 +12,10 @@ def cvManagement(request):
         name = "Kai Jie"
     else:
         name = "Guest"
-        return JsonResponse({'error_message': "You need to login first to access into this page"}, status=403)
+        return render(request, "defaultError.html", {
+            "error_status": 403,
+            "error_message": "Please login to enter this site",
+        }, status=403)
     if request.method == "POST":
         if "cvUploadName" in request.POST:
             # check pdf type
@@ -32,9 +34,15 @@ def cvManagement(request):
                     # have existed before (undo previous adjustments)
                     current_active.active = True
                     current_active.save()
-                    return JsonResponse({'error_message': "You have uploaded this version of CV before"}, status=403)
+                    return render(request, "defaultError.html", {
+                        "error_status": 422,
+                        "error_message": "This file already existed",
+                    }, status=422)
             else:
-                return JsonResponse({'error_message': "Only accepts pdf file type"}, status=403)
+                return render(request, "defaultError.html", {
+                    "error_status": 422,
+                    "error_message": "Please upload pdf type file only",
+                }, status=422)
         else:
             if "activateCV" in request.POST:
                 # set active

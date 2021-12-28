@@ -9,6 +9,7 @@
 		<link rel="stylesheet" href="{% static 'css/sideBar.css' %}" />
 		<link rel="stylesheet" href="{% static 'css/contactFooter.css' %}">
 		<link rel="stylesheet" href="{% static 'css/navBar.css' %}">
+		<link rel="stylesheet" href="{% static 'css/error.css' %}">
 		<!--
 			<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCkATxRRNWgIy-Qn5tT6rhvgMn9uZZF_2M"></script>
 			<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -17,9 +18,11 @@
 	<body class="is-preload">
 		<div id="navBar">
 			<ul>
-				<li><a class="active">Home</a></li>
-				<li><a>News</a></li>
-				<li><a>Contact</a></li>
+				<li><a href="{% url 'mainFrame:mainFrame' %}">Home</a></li>
+				<li><a>Projects</a></li>
+				{% if request.user.is_authenticated %}
+					<li><a href="{% url 'cv:cvManagement' %}">CV</a></li>
+				{% endif %}
 				<li><a>About</a></li>
 				{% if request.user.is_authenticated %}
 					<li><a href="{% url 'logout' %}">Logout</a></li>

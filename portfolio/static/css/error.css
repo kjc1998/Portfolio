@@ -1,0 +1,16 @@
+#errorDiv {
+  position: relative;
+  width: 30vw;
+  height: 40vh;
+  margin: 10vh auto 0;
+  border: 3px solid grey;
+  border-radius: 5%;
+  text-align: center;
+}
+#errorDivMessage {
+  margin: 5vh auto;
+  font-size: 150%;
+}
+#errorDivMessage > h1 {
+  font-weight: bold;
+}

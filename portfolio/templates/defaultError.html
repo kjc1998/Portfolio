@@ -1,0 +1,14 @@
+{% extends "defaultTemplate.html" %}
+
+{% block title %}<title>Error</title>{% endblock %}
+
+{% block content %}
+<body>
+    <div id="errorDiv">
+        <div id="errorDivMessage">
+            <h1>{{ error_status }}</h1>
+            <p>{{ error_message }}</p>
+        </div>
+    </div>
+</body>
+{% endblock %}

@@ -19,8 +19,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('kaijiechow/', include('django.contrib.auth.urls')),
-    path('kaijiechow/admin', admin.site.urls),
-    path('kaijiechow/main', include("mainFrame.urls")),
-    path('kaijiechow/cv', include("cv.urls")),
+    path("kaijiechow/", include("django.contrib.auth.urls")),
+    path("kaijiechow/admin", admin.site.urls),
+    path("kaijiechow/main", include("mainFrame.urls")),
+    path("kaijiechow/cv", include("cv.urls")),
+    path("kaijiechow/project", include("project.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

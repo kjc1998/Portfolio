@@ -33,8 +33,10 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'mainFrame',    # newly installed app
+    # newly installed apps
+    'mainFrame',
     'cv',
+    'project',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

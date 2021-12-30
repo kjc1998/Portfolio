@@ -1,0 +1,111 @@
+{% extends "defaultTemplate.html" %}
+
+{% block title %}<title>KJ Chow Project</title>{% endblock %}
+
+{% block content %}
+<table id="projectTable">
+    <tr>
+        <th>Name</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Tags</th>
+        <th>Ongoing</th>
+    </tr>
+    {% for project in project_list %}
+
+        <!-- View Project -->
+        <tr id="projectView_{{ project.id }}">
+            <td>{{ project.name }}</td>
+            <td>{{ project.start_date }}</td>
+            {% if project.end_date is not none %}<td>{{ project.end_date }}</td>{% else %}<td></td>{% endif %}
+            {% if project.tags|length > 0 %}<td>{{ project.tags }}</td>{% else %}<td></td>{% endif %}
+            <td>{{ project.ongoing }}</td>
+            <td>
+                <button name="editProject" type="button" onclick="editProject('projectView_{{ project.id }}', 'projectEdit_{{ project.id }}')">Edit</button>
+                <form action="{% url 'project:projectManagement' %}" method="POST">
+                    {% csrf_token %}
+                    <button name="deleteProject" value="{{ project.id }}">Delete</button>
+                </form>
+            </td>
+        </tr>
+        
+        <!-- Edit Project -->
+        <tr id="projectEdit_{{ project.id }}" style="display: none;">
+            <form action="{% url 'project:projectManagement' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" id="projectID" name="projectID" value="{{ project.id }}">
+                <td><input type="text" id="projectName_{{ project.id }}" name="projectName_{{ project.id }}" value="{{ project.name }}" required></td>
+                <td><input type="date" id="projectStart_{{ project.id }}" name="projectStart_{{ project.id }}" onchange="minEndDate('{{ project.id }}')" value="{{ project.start_date }}" required></td>
+                <td><input type="date" id="projectEnd_{{ project.id }}" name="projectEnd_{{ project.id }}" value="{{ project.end_date }}"></td>
+                {% if project.tags|length > 0 %}<td>{{ project.tags }}</td>{% else %}<td></td>{% endif %}
+
+                {% if project.end_date is None %}
+                    <td>
+                        <input type="checkbox" id="projectOngoing_{{ project.id }}" name="projectOngoing_{{ project.id }}" checked>
+                        <label for="projectOngoing_{{ project.id }}"></label>
+                    </td>
+                {% else %}
+                    <td>
+                        <input type="checkbox" id="projectOngoing_{{ project.id }}" name="projectOngoing_{{ project.id }}">
+                        <label for="projectOngoing_{{ project.id }}"></label>
+                    </td>
+                {% endif %}
+                <td>
+                    <button name="editProject">Save</button>
+                    <button name="cancelEdit" type="button" onclick="editProject('projectEdit_{{ project.id }}', 'projectView_{{ project.id }}')">Cancel</button>
+                </td>
+            </form>
+        </tr>
+    {% endfor %}
+    
+
+    <!-- New Project -->
+    <tr id="projectNew_new">
+        <form action="{% url 'project:projectManagement' %}" method="POST">
+            {% csrf_token %}
+            <td><input type="text" id="projectName_new" name="projectName_new" required></td>
+            <td><input type="date" id="projectStart_new" name="projectStart_new" onchange="minEndDate('new')" required></td>
+            <td><input type="date" id="projectEnd_new" name="projectEnd_new"></td>
+            <td></td>
+            <td>
+                <input type="checkbox" id="projectOngoing_new" name="projectOngoing_new" checked>
+                <label for="projectOngoing_new"></label>
+            </td>
+            <td><button name="addProject">Add</button></td>
+        </form>
+    </tr>
+</table>
+
+    <!-- Pagination -->
+    <div id="pagination">
+        {% for i in pages %}
+            <a href="{% url 'project:projectManagement' %}?page={{ i }}">{{ i }}</a>
+        {% endfor %}
+    </div>
+
+    <script>
+        Date.prototype.toDateInputValue = (function() {
+            var local = new Date(this);
+            local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+            return local.toJSON().slice(0,10);
+        });
+
+        // Default Starting Value
+        document.getElementById("projectStart_new").value = new Date().toDateInputValue();
+        document.getElementById("projectEnd_new").value = new Date().toDateInputValue();
+        function minEndDate(row_id){
+            var startDate = document.getElementById(`projectStart_${row_id}`).value;
+            var endDateElement = document.getElementById(`projectEnd_${row_id}`);
+            endDateElement.min = startDate;
+        }
+        minEndDate('new');
+
+        // Edit Project
+        function editProject(hide_id, show_id){
+            var hideEle = document.getElementById(hide_id);
+            var showEle = document.getElementById(show_id);
+            hideEle.style.display="none";
+            showEle.style.display="";
+        }
+    </script>
+{% endblock %}

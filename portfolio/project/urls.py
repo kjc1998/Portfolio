@@ -4,4 +4,5 @@ from . import views
 app_name = "project"
 urlpatterns = [
     path("", views.projectManagement, name="projectManagement"),
+    path("/<int:pid>", views.projectMain, name="projectMain"),
 ]

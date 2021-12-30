@@ -1,6 +1,6 @@
 {% extends "defaultTemplate.html" %}
 
-{% block title %}<title>KJ Chow Project</title>{% endblock %}
+{% block title %}<title>KJ Chow Projects</title>{% endblock %}
 
 {% block content %}
 <table id="projectTable">
@@ -15,13 +15,13 @@
 
         <!-- View Project -->
         <tr id="projectView_{{ project.id }}">
-            <td>{{ project.name }}</td>
+            <td><a href="{% url 'project:projectMain' project.id %}">{{ project.name }}</a></td>
             <td>{{ project.start_date }}</td>
             {% if project.end_date is not none %}<td>{{ project.end_date }}</td>{% else %}<td></td>{% endif %}
             {% if project.tags|length > 0 %}<td>{{ project.tags }}</td>{% else %}<td></td>{% endif %}
             <td>{{ project.ongoing }}</td>
             <td>
-                <button name="editProject" type="button" onclick="editProject('projectView_{{ project.id }}', 'projectEdit_{{ project.id }}')">Edit</button>
+                <button name="editProject" type="button" onclick="editProjectFunction('{{ project.id }}', 'projectView_{{ project.id }}', 'projectEdit_{{ project.id }}')">Edit</button>
                 <form action="{% url 'project:projectManagement' %}" method="POST">
                     {% csrf_token %}
                     <button name="deleteProject" value="{{ project.id }}">Delete</button>
@@ -41,18 +41,18 @@
 
                 {% if project.end_date is None %}
                     <td>
-                        <input type="checkbox" id="projectOngoing_{{ project.id }}" name="projectOngoing_{{ project.id }}" checked>
+                        <input type="checkbox" id="projectOngoing_{{ project.id }}" name="projectOngoing_{{ project.id }}" onclick="dateRequired('{{ project.id }}')" checked>
                         <label for="projectOngoing_{{ project.id }}"></label>
                     </td>
                 {% else %}
                     <td>
-                        <input type="checkbox" id="projectOngoing_{{ project.id }}" name="projectOngoing_{{ project.id }}">
+                        <input type="checkbox" id="projectOngoing_{{ project.id }}" name="projectOngoing_{{ project.id }}" onclick="dateRequired('{{ project.id }}')">
                         <label for="projectOngoing_{{ project.id }}"></label>
                     </td>
                 {% endif %}
                 <td>
                     <button name="editProject">Save</button>
-                    <button name="cancelEdit" type="button" onclick="editProject('projectEdit_{{ project.id }}', 'projectView_{{ project.id }}')">Cancel</button>
+                    <button name="cancelEdit" type="button" onclick="editProjectFunction('{{ project.id }}', 'projectEdit_{{ project.id }}', 'projectView_{{ project.id }}')">Cancel</button>
                 </td>
             </form>
         </tr>
@@ -68,7 +68,7 @@
             <td><input type="date" id="projectEnd_new" name="projectEnd_new"></td>
             <td></td>
             <td>
-                <input type="checkbox" id="projectOngoing_new" name="projectOngoing_new" checked>
+                <input type="checkbox" id="projectOngoing_new" name="projectOngoing_new" onclick="dateRequired('new')" checked>
                 <label for="projectOngoing_new"></label>
             </td>
             <td><button name="addProject">Add</button></td>
@@ -90,6 +90,17 @@
             return local.toJSON().slice(0,10);
         });
 
+        // Setting Requirement
+        function dateRequired(pid){
+            var checkBoxEle = document.getElementById("projectOngoing_"+pid);
+            var endDateEle = document.getElementById("projectEnd_"+pid);
+            if(checkBoxEle.checked){
+                endDateEle.required = false;
+            }else{
+                endDateEle.required = true;
+            }
+        }
+
         // Default Starting Value
         document.getElementById("projectStart_new").value = new Date().toDateInputValue();
         document.getElementById("projectEnd_new").value = new Date().toDateInputValue();
@@ -101,11 +112,12 @@
         minEndDate('new');
 
         // Edit Project
-        function editProject(hide_id, show_id){
+        function editProjectFunction(pid, hide_id, show_id){
             var hideEle = document.getElementById(hide_id);
             var showEle = document.getElementById(show_id);
             hideEle.style.display="none";
             showEle.style.display="";
+            minEndDate(pid);
         }
     </script>
 {% endblock %}

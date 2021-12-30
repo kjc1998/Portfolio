@@ -70,8 +70,9 @@ def cvManagement(request):
                     if next_active:
                         next_active.active = True
                         next_active.save()
-    cv_files = CVS.objects.all().order_by("-id")
-    cv_paginator = Paginator(cv_files, 5)
+    cv_active = CVS.objects.filter(active=True).first()
+    cv_files = CVS.objects.exclude(active=True).all().order_by("-id")
+    cv_paginator = Paginator(cv_files, 4)
     page_list = range(1, cv_paginator.num_pages+1)
 
     # Pagination
@@ -79,7 +80,13 @@ def cvManagement(request):
     cv_page = cv_paginator.get_page(page_num)
     cv_page_list = cv_page.object_list
 
-    dic_of_cvs = {}
+    # active cv in all pages
+    dic_of_cvs = {
+        cv_active.id: [cv_active.name,
+                       cv_active.date.strftime("%m/%d/%Y"),
+                       base64.b64encode(cv_active.data).decode("utf-8"),
+                       cv_active.active]
+    }
     for cv_file in cv_page_list:
         dic_of_cvs[cv_file.id] = [cv_file.name, cv_file.date.strftime("%m/%d/%Y"), base64.b64encode(
             cv_file.data).decode("utf-8"), cv_file.active]

@@ -32,6 +32,14 @@
     {% if cv_files is not none %}
         <section id="cvVersions">
             <header class="major">
+                <h2>Active</h2>
+            </header>
+            <div>
+                <div id="cvActiveContent"></div>
+                <div id="cvActiveHeader"></div>
+            </div>
+
+            <header class="major">
                 <h2>Versions</h2>
             </header>
             <table id="cvTable">
@@ -68,36 +76,28 @@
                 var b64Data = cv_files[key][2];
                 var b64DataSrc = `data:application/pdf;base64,${b64Data}`;
                 var activeCV = cv_files[key][3];
-
-                // row handling
-                var row = table.insertRow(1);
-                var cell_1 = row.insertCell(0);
-                cell_1.innerHTML = `<p>${cvName}</p><p>${cvDate}</p>`;
-                var cell_2 = row.insertCell(1);
-                cell_2.innerHTML = `
-                    <section>
-                        <a onclick="openNewTab('${b64DataSrc}')">View Full Screen</a>
-                        <div>
-                            <object
-                                id=cv_${key}
-                                style='display:none;'
-                                type="application/pdf"
-                                class="internal"
-                                data=${b64DataSrc}
-                            ></object>
-                        </div>
-                        <p class="cPointer" onclick="objectExpand(${key})">Show/Hide</p>
-                    </section>`;
-                var cell_3 = row.insertCell(2);
-                if(activeCV){
-                    cell_3.innerHTML = `
-                        Active
-                        <form action="{% url 'cv:cvManagement' %}" method="POST">
-                            {% csrf_token %}
-                            <button name="deleteCV" value="${key}">Delete</button>
-                        </form>
-                        `;
-                }else{
+                if (!activeCV){
+                    // row handling
+                    var row = table.insertRow(1);
+                    var cell_1 = row.insertCell(0);
+                    cell_1.innerHTML = `<p>${cvName}</p><p>${cvDate}</p>`;
+                    var cell_2 = row.insertCell(1);
+                    cell_2.innerHTML = `
+                        <section>
+                            <a onclick="openNewTab('${b64DataSrc}')">View Full Screen</a>
+                            <div>
+                                <object
+                                    id=cv_${key}
+                                    style='display:none;'
+                                    type="application/pdf"
+                                    class="internal"
+                                    data=${b64DataSrc}
+                                ></object>
+                            </div>
+                            <p class="cPointer" onclick="objectExpand(${key})">Show/Hide</p>
+                        </section>
+                    `;
+                    var cell_3 = row.insertCell(2);
                     cell_3.innerHTML = `
                         <form action="{% url 'cv:cvManagement' %}" method="POST">
                             {% csrf_token %}
@@ -106,7 +106,32 @@
                         <form action="{% url 'cv:cvManagement' %}" method="POST">
                             {% csrf_token %}
                             <button name="deleteCV" value="${key}">Delete</button>
-                        </form>`;
+                        </form>
+                    `;
+                }else{
+                    content = document.getElementById("cvActiveContent");
+                    content.innerHTML = `
+                        <section>
+                            <a onclick="openNewTab('${b64DataSrc}')">View Full Screen</a>
+                            <div>
+                                <object
+                                    id=cv_${key}
+                                    type="application/pdf"
+                                    class="internal"
+                                    data=${b64DataSrc}
+                                ></object>
+                            </div>
+                        </section>
+                    `;
+
+                    header = document.getElementById("cvActiveHeader");
+                    header.innerHTML = `
+                        <p>${cvName} &emsp; ${cvDate} </p>
+                        <form action="{% url 'cv:cvManagement' %}" method="POST">
+                            {% csrf_token %}
+                            <button name="deleteCV" value="${key}">Delete</button>
+                        </form>
+                    `;
                 }
             }
         }

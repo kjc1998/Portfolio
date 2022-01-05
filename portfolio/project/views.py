@@ -15,21 +15,19 @@ def projectManagement(request):
             start = datetime.strptime(
                 field_entries["projectStart_"+project_id], "%Y-%m-%d")
             end = datetime.strptime(
-                field_entries["projectEnd_"+project_id], "%Y-%m-%d") if field_entries["projectEnd_"+project_id] else None
+                field_entries["projectEnd_"+project_id], "%Y-%m-%d")
 
             edit_project = Project.objects.filter(id=int(project_id)).first()
             edit_project.name = name
             edit_project.start_date = start
             try:
+                # Check Input
                 ongoing = field_entries["projectOngoing_"+project_id]
-
-                edit_project.end_date = None
+                edit_project.end_date = datetime.now()  # Default to Current Date
                 edit_project.ongoing = True
             except MultiValueDictKeyError:
-
                 edit_project.end_date = end
                 edit_project.ongoing = False
-
             edit_project.save()
         elif "deleteProject" in request.POST:
             delete_project = Project.objects.filter(
@@ -42,24 +40,27 @@ def projectManagement(request):
                 start = datetime.strptime(
                     field_entries["projectStart_new"], "%Y-%m-%d")
                 end = datetime.strptime(
-                    field_entries["projectEnd_new"], "%Y-%m-%d") if field_entries["projectEnd_new"] else None
+                    field_entries["projectEnd_new"], "%Y-%m-%d")
                 try:
                     ongoing = field_entries["projectOngoing_new"]
+                    ongoing = True
                 except MultiValueDictKeyError:
                     ongoing = False
-
-                if ongoing:
-                    new_project = Project(
-                        name=name, start_date=start, ongoing=True)
-                else:
-                    new_project = Project(
-                        name=name, start_date=start, end_date=end, ongoing=False)
+                new_project = Project(
+                    name=name, start_date=start, end_date=end, ongoing=ongoing)
                 new_project.save()
             except IntegrityError:
                 return render(request, "defaultError.html", {
                     "error_status": 422,
                     "error_message": "This file already existed",
                 }, status=422)
+
+    # Update Ongoing Project with Time
+    ongoing_projects = Project.objects.filter(ongoing=True).all()
+    for ongoing_project in ongoing_projects:
+        ongoing_project.end_date = datetime.now()
+        ongoing_project.save()
+
     projects = Project.objects.all().order_by("-start_date")
     projects_paginator = Paginator(projects, 5)
     pages = range(1, projects_paginator.num_pages + 1)
@@ -70,8 +71,7 @@ def projectManagement(request):
     projects_page_list = project_page.object_list
     for project in projects_page_list:
         project.start_date = project.start_date.strftime("%Y-%m-%d")
-        project.end_date = project.end_date.strftime(
-            "%Y-%m-%d") if project.end_date != None else None
+        project.end_date = project.end_date.strftime("%Y-%m-%d")
     return render(request, "project/projectManagement.html", {
         "project_list": projects_page_list,
         "pages": pages,
@@ -88,4 +88,5 @@ def projectMain(request, pid):
         }, status=500)
     stories = current_project.story.all()
     return render(request, "project/projectMain.html", {
+        "project": current_project,
     })

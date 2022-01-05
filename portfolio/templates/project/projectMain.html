@@ -3,4 +3,30 @@
 {% block title %}<title>KJ Chow Project</title>{% endblock %}
 
 {% block content %}
+<table id="storyTable">
+    <tr>
+        <th>Name</th>
+        <th>Date</th>
+        <th>Tags</th>
+    </tr>
+</table>
+
+<!-- New Story Drop Down -->
+<div id="storyNew_new">
+    <form action="{% url 'project:projectMain' project.id %}" method="POST">
+        {% csrf_token %}
+        <input type="text" id="storyName_new" name="storyName_new" required>
+        <input type="date" id="storyDate_new" name="storyDate_new" required>
+    </form>
+</div>
+
+<!-- js handling -->
+<script>
+    Date.prototype.toDateInputValue = (function() {
+        var local = new Date(this);
+        local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+        return local.toJSON().slice(0,10);
+    });
+    document.getElementById("storyDate_new").value = new Date().toDateInputValue();
+</script>
 {% endblock %}

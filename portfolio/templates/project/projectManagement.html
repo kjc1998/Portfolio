@@ -17,7 +17,7 @@
         <tr id="projectView_{{ project.id }}">
             <td><a href="{% url 'project:projectMain' project.id %}">{{ project.name }}</a></td>
             <td>{{ project.start_date }}</td>
-            {% if project.end_date is not none %}<td>{{ project.end_date }}</td>{% else %}<td></td>{% endif %}
+            {% if project.ongoing == True %}<td></td>{% else %}<td>{{ project.end_date }}</td>{% endif %}
             {% if project.tags|length > 0 %}<td>{{ project.tags }}</td>{% else %}<td></td>{% endif %}
             <td>{{ project.ongoing }}</td>
             <td>
@@ -36,20 +36,17 @@
                 <input type="hidden" id="projectID" name="projectID" value="{{ project.id }}">
                 <td><input type="text" id="projectName_{{ project.id }}" name="projectName_{{ project.id }}" value="{{ project.name }}" required></td>
                 <td><input type="date" id="projectStart_{{ project.id }}" name="projectStart_{{ project.id }}" onchange="minEndDate('{{ project.id }}')" value="{{ project.start_date }}" required></td>
-                <td><input type="date" id="projectEnd_{{ project.id }}" name="projectEnd_{{ project.id }}" value="{{ project.end_date }}"></td>
+                <td><input type="date" id="projectEnd_{{ project.id }}" name="projectEnd_{{ project.id }}" value="{{ project.end_date }}" required></td>
                 {% if project.tags|length > 0 %}<td>{{ project.tags }}</td>{% else %}<td></td>{% endif %}
 
-                {% if project.end_date is None %}
-                    <td>
-                        <input type="checkbox" id="projectOngoing_{{ project.id }}" name="projectOngoing_{{ project.id }}" onclick="dateRequired('{{ project.id }}')" checked>
-                        <label for="projectOngoing_{{ project.id }}"></label>
-                    </td>
+                <td>
+                {% if project.ongoing == True %}
+                        <input type="checkbox" id="projectOngoing_{{ project.id }}" name="projectOngoing_{{ project.id }}" checked>
                 {% else %}
-                    <td>
-                        <input type="checkbox" id="projectOngoing_{{ project.id }}" name="projectOngoing_{{ project.id }}" onclick="dateRequired('{{ project.id }}')">
-                        <label for="projectOngoing_{{ project.id }}"></label>
-                    </td>
+                        <input type="checkbox" id="projectOngoing_{{ project.id }}" name="projectOngoing_{{ project.id }}">
                 {% endif %}
+                        <label for="projectOngoing_{{ project.id }}"></label>
+                </td>
                 <td>
                     <button name="editProject">Save</button>
                     <button name="cancelEdit" type="button" onclick="editProjectFunction('{{ project.id }}', 'projectEdit_{{ project.id }}', 'projectView_{{ project.id }}')">Cancel</button>
@@ -65,10 +62,10 @@
             {% csrf_token %}
             <td><input type="text" id="projectName_new" name="projectName_new" required></td>
             <td><input type="date" id="projectStart_new" name="projectStart_new" onchange="minEndDate('new')" required></td>
-            <td><input type="date" id="projectEnd_new" name="projectEnd_new"></td>
+            <td><input type="date" id="projectEnd_new" name="projectEnd_new" required></td>
             <td></td>
             <td>
-                <input type="checkbox" id="projectOngoing_new" name="projectOngoing_new" onclick="dateRequired('new')" checked>
+                <input type="checkbox" id="projectOngoing_new" name="projectOngoing_new" checked>
                 <label for="projectOngoing_new"></label>
             </td>
             <td><button name="addProject">Add</button></td>
@@ -89,17 +86,6 @@
             local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
             return local.toJSON().slice(0,10);
         });
-
-        // Setting Requirement
-        function dateRequired(pid){
-            var checkBoxEle = document.getElementById("projectOngoing_"+pid);
-            var endDateEle = document.getElementById("projectEnd_"+pid);
-            if(checkBoxEle.checked){
-                endDateEle.required = false;
-            }else{
-                endDateEle.required = true;
-            }
-        }
 
         // Default Starting Value
         document.getElementById("projectStart_new").value = new Date().toDateInputValue();

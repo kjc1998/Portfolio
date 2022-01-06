@@ -86,6 +86,18 @@ def projectMain(request, pid):
             "error_status": 500,
             "error_message": "No such project exists",
         }, status=500)
+    if request.method == "POST":
+        # All Entries
+        field_entries = request.POST
+        name = field_entries["storyName_new"]
+        date = field_entries["storyDate_new"]
+        tags = field_entries["storyTags_new"]
+        image_data = request.FILES["storyImage_new"].file
+        content = field_entries["storyContent_new"]
+
+        # check date
+        # check image
+
     stories = current_project.story.all()
     return render(request, "project/projectMain.html", {
         "project": current_project,

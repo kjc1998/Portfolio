@@ -3311,3 +3311,18 @@ body.is-touch .poptrox-popup .closer {
   cursor: pointer;
   text-decoration: none;
 }
+
+input[type="text"],
+textarea {
+  background-color: white;
+  border: solid black 1px;
+}
+
+.tags {
+  list-style-type: none;
+  display: inline-block;
+  padding: 4px;
+  margin: 0 2px;
+  border: solid black 1px;
+  border-radius: 10%;
+}

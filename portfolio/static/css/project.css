@@ -1,0 +1,27 @@
+#storyNewDiv {
+  border-top: solid 1px grey;
+  padding-top: 2.5%;
+}
+
+.storySlide {
+  display: none;
+}
+
+tbody {
+  width: 100%;
+  display: table;
+}
+
+#storyNew:checked + .storySlide {
+  display: block;
+}
+
+.buttonText {
+  display: inline-block;
+  background: grey;
+  border-radius: 4px;
+  color: #fff;
+  margin: 2px;
+  padding: 2px 10px;
+  cursor: pointer;
+}

@@ -12,15 +12,46 @@
 </table>
 
 <!-- New Story Drop Down -->
-<div id="storyNew_new">
-    <form action="{% url 'project:projectMain' project.id %}" method="POST">
-        {% csrf_token %}
-        <input type="text" id="storyName_new" name="storyName_new" required>
-        <input type="date" id="storyDate_new" name="storyDate_new" required>
-    </form>
+<div id="storyNewDiv">
+    <label for="storyNew" class="input-group"><p class="buttonText">New/Hide</p></label>
+    <input id="storyNew" type="checkbox">
+
+    <table class="storySlide">  
+        <tbody>
+            <form action="{% url 'project:projectMain' project.id %}" method="POST">
+                {% csrf_token %}
+                <tr>
+                    <td>Name:</td>
+                    <td><input type="text" id="storyName_new" name="storyName_new" placeholder="Story" required></td>
+                </tr>
+                <tr>
+                    <td>Date:</td>
+                    <td><input type="date" id="storyDate_new" name="storyDate_new" required></td>
+                </tr>
+                <tr>
+                    <td>Tags:<br>(Press enter or add a comma after each tag)</td>
+                    <td>
+                        <li class="tags">html <i class="uit uit-multiply"></i></li>
+                        <li class="tags">css <i class="uit uit-multiply"></i></li>
+                        <input type="text" id="storyTags_new" name="storyTags_new" placeholder="New Tags" onkeydown="return event.key != 'Enter';" required>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Image:</td>
+                    <td><input type="file" id="storyImage_new" name="storyImage_new" accept="image/png, image/gif, image/jpeg"/></td>
+                </tr>
+                <tr>
+                    <td>Content:</td>
+                    <td><textarea id="storyContent_new" name="storyContent_new" cols="40" rows="5" placeholder="Content" required></textarea></td>
+                </tr>
+                <tr>
+                    <td><input type="submit" name="storyNew_add"/></td></tr>
+            </form>
+        </tbody>
+    </table>
 </div>
 
-<!-- js handling -->
+<!-- DOM handling -->
 <script>
     Date.prototype.toDateInputValue = (function() {
         var local = new Date(this);
@@ -28,5 +59,13 @@
         return local.toJSON().slice(0,10);
     });
     document.getElementById("storyDate_new").value = new Date().toDateInputValue();
+
+    tag_input = document.getElementById("storyTags_new");
+    function addTag(e){
+        if(e.key=="Enter"){
+            console.log(e.target.value);
+        }
+    };
+    tag_input.addEventListener("keyup", addTag);
 </script>
 {% endblock %}

@@ -61,9 +61,21 @@
     document.getElementById("storyDate_new").value = new Date().toDateInputValue();
 
     tag_input = document.getElementById("storyTags_new");
+
+    let tags = [];
     function addTag(e){
         if(e.key=="Enter"){
-            console.log(e.target.value);
+            let tag = e.target.value.replace(/\s+/g, ' ');
+            if(tag.length > 1){
+                let tag_array = tag.split(',').map(element => element.trim());
+                let unique_array = [...new Set(tag_array)];
+                unique_array.forEach(tag=>{
+                    if(!tags.includes(tag)){
+                        tags.push(tag);
+                    }
+                });
+                console.log(tags);
+            }
         }
     };
     tag_input.addEventListener("keyup", addTag);

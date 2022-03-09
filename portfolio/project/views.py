@@ -1,9 +1,11 @@
+from cgi import print_form
 from datetime import datetime
 from django.shortcuts import render
 from django.core.paginator import Paginator
 from django.db.utils import IntegrityError
 from django.utils.datastructures import MultiValueDictKeyError
-from .models import Project
+
+from .models import Project, Story, Tags
 
 
 def projectManagement(request):
@@ -87,16 +89,35 @@ def projectMain(request, pid):
             "error_message": "No such project exists",
         }, status=500)
     if request.method == "POST":
-        # All Entries
-        field_entries = request.POST
-        name = field_entries["storyName_new"]
-        date = field_entries["storyDate_new"]
-        tags = field_entries["storyTags_new"]
-        image_data = request.FILES["storyImage_new"].file
-        content = field_entries["storyContent_new"]
+        if "storyNew_add" in request.POST:
+            field_entries = request.POST
+            name = str(field_entries["storyName_new"])
+            date = datetime.strptime(field_entries["storyDate_new"], "%Y-%m-%d")
+            tags = [tag.strip() for tag in field_entries["storyTags_final"].split(",")]
+            content = str(field_entries["storyContent_new"])
+            try:
+                image_bytes_data = request.FILES["storyImage_new"].file.read()
+            except KeyError:
+                image_bytes_data = None
+            # check date
+            if not (date.date() > current_project.start_date and date.date() < current_project.end_date):
+                return render(request, "defaultError.html", {
+                    "error_status": 400,
+                    "error_message": f"Date is out of project range. Project Date: {current_project.start_date} till {current_project.end_date}",
+                }, status=400)
 
-        # check date
-        # check image
+            # check image
+            if image_bytes_data:
+                if "image" not in request.FILES["storyImage_new"].content_type:
+                    return render(request, "defaultError.html", {
+                        "error_status": 400,
+                        "error_message": f"Invalid file type",
+                    }, status=400)
+
+            # new story
+            new_story_instance = Story(date=date, content=content, primary_image=image_bytes_data, project=pid)
+
+            # populating tags
 
     stories = current_project.story.all()
     return render(request, "project/projectMain.html", {

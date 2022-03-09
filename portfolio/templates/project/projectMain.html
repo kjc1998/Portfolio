@@ -18,7 +18,7 @@
 
     <table class="storySlide">  
         <tbody>
-            <form action="{% url 'project:projectMain' project.id %}" method="POST">
+            <form action="{% url 'project:projectMain' project.id %}" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 <tr>
                     <td>Name:</td>
@@ -37,7 +37,7 @@
                 </tr>
                 <tr>
                     <td>Image:</td>
-                    <td><input type="file" id="storyImage_new" name="storyImage_new" accept="image/png, image/gif, image/jpeg"/></td>
+                    <td><input type="file" id="storyImage_new" name="storyImage_new" accept="image/*"/></td>
                 </tr>
                 <tr>
                     <td>Content:</td>

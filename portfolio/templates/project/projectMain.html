@@ -9,6 +9,17 @@
         <th>Date</th>
         <th>Tags</th>
     </tr>
+    {% for story in stories %}
+    <tr>
+        <td><a href="$">{{ story.name }}</a></td>
+        <td>{{ story.date }}</td>
+        <td>
+            {% for tag in tags %}
+                <li class="tags">{{ tag.name }}</li>
+            {% endfor %}
+        </td>
+    </tr>
+    {% endfor %}
 </table>
 
 <!-- New Story Drop Down -->

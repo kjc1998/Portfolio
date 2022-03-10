@@ -1,4 +1,3 @@
-from cgi import print_form
 from datetime import datetime
 from django.shortcuts import render
 from django.core.paginator import Paginator
@@ -99,6 +98,7 @@ def projectMain(request, pid):
                 image_bytes_data = request.FILES["storyImage_new"].file.read()
             except KeyError:
                 image_bytes_data = None
+
             # check date
             if not (date.date() > current_project.start_date and date.date() < current_project.end_date):
                 return render(request, "defaultError.html", {
@@ -114,12 +114,37 @@ def projectMain(request, pid):
                         "error_message": f"Invalid file type",
                     }, status=400)
 
-            # new story
-            new_story_instance = Story(date=date, content=content, primary_image=image_bytes_data, project=pid)
+            # add new story
+            try:
+                new_story_instance = Story(name=name, date=date, content=content, primary_image=image_bytes_data, project=current_project)
+                new_story_instance.save()
+            except IntegrityError:
+                return render(request, "defaultError.html", {
+                    "error_status": 422,
+                    "error_message": "This story name already existed",
+                }, status=422)
 
             # populating tags
+            current_story = Story.objects.get(name=name)
+            for tag in tags:
+                if tag == "":
+                    break
 
+                try:
+                    new_tag_instance = Tags(name=tag)
+                    new_tag_instance.save()
+                except IntegrityError:
+                    pass
+                
+                # tying tags to projects and stories
+                current_tag = Tags.objects.get(name=tag)
+                current_tag.project.add(current_project)
+                current_tag.story.add(current_story)
+                
     stories = current_project.story.all()
+    project_tags = current_project.tags.all()
     return render(request, "project/projectMain.html", {
         "project": current_project,
+        "stories": stories,
+        "tags": project_tags,
     })

@@ -14,6 +14,7 @@ class Project(models.Model):
 
 class Story(models.Model):
     id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=100, unique=True)
     date = models.DateField(null=False)
     content = models.CharField(max_length=5000)
     primary_image = models.BinaryField(null=True)
@@ -24,6 +25,6 @@ class Story(models.Model):
 class Tags(models.Model):
     # Tags with Many to Many Relationship
     id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True, null=False)
     project = models.ManyToManyField(Project, related_name="tags")
     story = models.ManyToManyField(Story, related_name="tags")

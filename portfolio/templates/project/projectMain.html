@@ -14,8 +14,8 @@
         <td><a href="$">{{ story.name }}</a></td>
         <td>{{ story.date }}</td>
         <td>
-            {% for tag in tags %}
-                <li class="tags">{{ tag.name }}</li>
+            {% for tag in story.tag_list %}
+                <li class="tags">{{ tag }}</li>
             {% endfor %}
         </td>
     </tr>
@@ -23,43 +23,45 @@
 </table>
 
 <!-- New Story Drop Down -->
-<div id="storyNewDiv">
-    <label for="storyNew" class="input-group"><p class="buttonText">New/Hide</p></label>
-    <input id="storyNew" type="checkbox">
+{% if request.user.is_authenticated %}
+    <div id="storyNewDiv">
+        <label for="storyNew" class="input-group"><p class="buttonText">New/Hide</p></label>
+        <input id="storyNew" type="checkbox">
 
-    <table class="storySlide">  
-        <tbody>
-            <form action="{% url 'project:projectMain' project.id %}" method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                <tr>
-                    <td>Name:</td>
-                    <td><input type="text" id="storyName_new" name="storyName_new" placeholder="Story" required></td>
-                </tr>
-                <tr>
-                    <td>Date:</td>
-                    <td><input type="date" id="storyDate_new" name="storyDate_new" required></td>
-                </tr>
-                <tr>
-                    <td>Tags:<br>(Press enter or add a comma after each tag)</td>
-                    <td id="tagsColumn">
-                        <input type="text" id="storyTags_new" name="storyTags_new" placeholder="New Tags" onkeydown="return event.key != 'Enter';">
-                        <input type="hidden" id="storyTags_final" name="storyTags_final" value="">
-                    </td>
-                </tr>
-                <tr>
-                    <td>Image:</td>
-                    <td><input type="file" id="storyImage_new" name="storyImage_new" accept="image/*"/></td>
-                </tr>
-                <tr>
-                    <td>Content:</td>
-                    <td><textarea id="storyContent_new" name="storyContent_new" cols="40" rows="5" placeholder="Content" required></textarea></td>
-                </tr>
-                <tr>
-                    <td><input type="submit" name="storyNew_add"/></td></tr>
-            </form>
-        </tbody>
-    </table>
-</div>
+        <table class="storySlide">  
+            <tbody>
+                <form action="{% url 'project:projectMain' project.id %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <tr>
+                        <td>Name:</td>
+                        <td><input type="text" id="storyName_new" name="storyName_new" placeholder="Story" required></td>
+                    </tr>
+                    <tr>
+                        <td>Date:</td>
+                        <td><input type="date" id="storyDate_new" name="storyDate_new" required></td>
+                    </tr>
+                    <tr>
+                        <td>Tags:<br>(Press enter or add a comma after each tag)</td>
+                        <td id="tagsColumn">
+                            <input type="text" id="storyTags_new" name="storyTags_new" placeholder="New Tags" onkeydown="return event.key != 'Enter';">
+                            <input type="hidden" id="storyTags_final" name="storyTags_final" value="">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Image:</td>
+                        <td><input type="file" id="storyImage_new" name="storyImage_new" accept="image/*"/></td>
+                    </tr>
+                    <tr>
+                        <td>Content:</td>
+                        <td><textarea id="storyContent_new" name="storyContent_new" cols="40" rows="5" placeholder="Content" required></textarea></td>
+                    </tr>
+                    <tr>
+                        <td><input type="submit" name="storyNew_add"/></td></tr>
+                </form>
+            </tbody>
+        </table>
+    </div>
+{% endif %}
 
 <!-- DOM handling -->
 <script>

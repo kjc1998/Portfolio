@@ -10,6 +10,7 @@
         <th>End Date</th>
         <th>Tags</th>
         <th>Ongoing</th>
+        {% if request.user.is_authenticated %}<th>Action</th>{% endif %}
     </tr>
     {% for project in project_list %}
 
@@ -18,59 +19,64 @@
             <td><a href="{% url 'project:projectMain' project.id %}">{{ project.name }}</a></td>
             <td>{{ project.start_date }}</td>
             {% if project.ongoing == True %}<td></td>{% else %}<td>{{ project.end_date }}</td>{% endif %}
-            {% if project.tags|length > 0 %}<td>{{ project.tags }}</td>{% else %}<td></td>{% endif %}
+            <td>{% for tag in project.tag_list %}<li class="tags">{{ tag }}</li>{% endfor %}</td>
             <td>{{ project.ongoing }}</td>
-            <td>
-                <button name="editProject" type="button" onclick="editProjectFunction('{{ project.id }}', 'projectView_{{ project.id }}', 'projectEdit_{{ project.id }}')">Edit</button>
-                <form action="{% url 'project:projectManagement' %}" method="POST">
-                    {% csrf_token %}
-                    <button name="deleteProject" value="{{ project.id }}">Delete</button>
-                </form>
-            </td>
+            {% if request.user.is_authenticated %}
+                <td>
+                    <button name="editProject" type="button" onclick="editProjectFunction('{{ project.id }}', 'projectView_{{ project.id }}', 'projectEdit_{{ project.id }}')">Edit</button>
+                    <form action="{% url 'project:projectManagement' %}" method="POST">
+                        {% csrf_token %}
+                        <button name="deleteProject" value="{{ project.id }}">Delete</button>
+                    </form>
+                </td>
+            {% endif %}
         </tr>
         
         <!-- Edit Project -->
-        <tr id="projectEdit_{{ project.id }}" style="display: none;">
-            <form action="{% url 'project:projectManagement' %}" method="POST">
-                {% csrf_token %}
-                <input type="hidden" id="projectID" name="projectID" value="{{ project.id }}">
-                <td><input type="text" id="projectName_{{ project.id }}" name="projectName_{{ project.id }}" value="{{ project.name }}" required></td>
-                <td><input type="date" id="projectStart_{{ project.id }}" name="projectStart_{{ project.id }}" onchange="minEndDate('{{ project.id }}')" value="{{ project.start_date }}" required></td>
-                <td><input type="date" id="projectEnd_{{ project.id }}" name="projectEnd_{{ project.id }}" value="{{ project.end_date }}" required></td>
-                {% if project.tags|length > 0 %}<td>{{ project.tags }}</td>{% else %}<td></td>{% endif %}
-
-                <td>
-                {% if project.ongoing == True %}
-                        <input type="checkbox" id="projectOngoing_{{ project.id }}" name="projectOngoing_{{ project.id }}" checked>
-                {% else %}
-                        <input type="checkbox" id="projectOngoing_{{ project.id }}" name="projectOngoing_{{ project.id }}">
-                {% endif %}
-                        <label for="projectOngoing_{{ project.id }}"></label>
-                </td>
-                <td>
-                    <button name="editProject">Save</button>
-                    <button name="cancelEdit" type="button" onclick="editProjectFunction('{{ project.id }}', 'projectEdit_{{ project.id }}', 'projectView_{{ project.id }}')">Cancel</button>
-                </td>
-            </form>
-        </tr>
+        {% if request.user.is_authenticated %}
+            <tr id="projectEdit_{{ project.id }}" style="display: none;">
+                <form action="{% url 'project:projectManagement' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" id="projectID" name="projectID" value="{{ project.id }}">
+                    <td><input type="text" id="projectName_{{ project.id }}" name="projectName_{{ project.id }}" value="{{ project.name }}" required></td>
+                    <td><input type="date" id="projectStart_{{ project.id }}" name="projectStart_{{ project.id }}" onchange="minEndDate('{{ project.id }}')" value="{{ project.start_date }}" required></td>
+                    <td><input type="date" id="projectEnd_{{ project.id }}" name="projectEnd_{{ project.id }}" value="{{ project.end_date }}" required></td>
+                    <td>{% for tag in project.tag_list %}<li class="tags">{{ tag }}</li>{% endfor %}</td>
+                    <td>
+                    {% if project.ongoing == True %}
+                            <input type="checkbox" id="projectOngoing_{{ project.id }}" name="projectOngoing_{{ project.id }}" checked>
+                    {% else %}
+                            <input type="checkbox" id="projectOngoing_{{ project.id }}" name="projectOngoing_{{ project.id }}">
+                    {% endif %}
+                            <label for="projectOngoing_{{ project.id }}"></label>
+                    </td>
+                    <td>
+                        <button name="editProject">Save</button>
+                        <button name="cancelEdit" type="button" onclick="editProjectFunction('{{ project.id }}', 'projectEdit_{{ project.id }}', 'projectView_{{ project.id }}')">Cancel</button>
+                    </td>
+                </form>
+            </tr>
+        {% endif %}
     {% endfor %}
     
 
     <!-- New Project -->
-    <tr id="projectNew_new">
-        <form action="{% url 'project:projectManagement' %}" method="POST">
-            {% csrf_token %}
-            <td><input type="text" id="projectName_new" name="projectName_new" required></td>
-            <td><input type="date" id="projectStart_new" name="projectStart_new" onchange="minEndDate('new')" required></td>
-            <td><input type="date" id="projectEnd_new" name="projectEnd_new" required></td>
-            <td></td>
-            <td>
-                <input type="checkbox" id="projectOngoing_new" name="projectOngoing_new" checked>
-                <label for="projectOngoing_new"></label>
-            </td>
-            <td><button name="addProject">Add</button></td>
-        </form>
-    </tr>
+    {% if request.user.is_authenticated %}
+        <tr id="projectNew_new">
+            <form action="{% url 'project:projectManagement' %}" method="POST">
+                {% csrf_token %}
+                <td><input type="text" id="projectName_new" name="projectName_new" required></td>
+                <td><input type="date" id="projectStart_new" name="projectStart_new" onchange="minEndDate('new')" required></td>
+                <td><input type="date" id="projectEnd_new" name="projectEnd_new" required></td>
+                <td></td>
+                <td>
+                    <input type="checkbox" id="projectOngoing_new" name="projectOngoing_new" checked>
+                    <label for="projectOngoing_new"></label>
+                </td>
+                <td><button name="addProject">Add</button></td>
+            </form>
+        </tr>
+    {% endif %}
 </table>
 
     <!-- Pagination -->

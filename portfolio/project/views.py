@@ -73,6 +73,9 @@ def projectManagement(request):
     for project in projects_page_list:
         project.start_date = project.start_date.strftime("%Y-%m-%d")
         project.end_date = project.end_date.strftime("%Y-%m-%d")
+        project.tag_list = [t.name for t in project.tags.all()]
+        if not project.tag_list:
+            project.tag_list = ["none"]
     return render(request, "project/projectManagement.html", {
         "project_list": projects_page_list,
         "pages": pages,
@@ -99,8 +102,8 @@ def projectMain(request, pid):
             except KeyError:
                 image_bytes_data = None
 
-            # check date
-            if not (date.date() > current_project.start_date and date.date() < current_project.end_date):
+            # check date (inclusive)
+            if not (date.date() >= current_project.start_date and date.date() <= current_project.end_date):
                 return render(request, "defaultError.html", {
                     "error_status": 400,
                     "error_message": f"Date is out of project range. Project Date: {current_project.start_date} till {current_project.end_date}",
@@ -142,9 +145,11 @@ def projectMain(request, pid):
                 current_tag.story.add(current_story)
                 
     stories = current_project.story.all()
-    project_tags = current_project.tags.all()
+    for story in stories:
+        story.tag_list = [t.name for t in story.tags.all()]
+        if not story.tag_list:
+            story.tag_list = ['none']
     return render(request, "project/projectMain.html", {
         "project": current_project,
         "stories": stories,
-        "tags": project_tags,
     })

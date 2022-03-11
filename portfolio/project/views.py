@@ -77,7 +77,7 @@ def projectManagement(request):
         if not project.tag_list:
             project.tag_list = ["none"]
     return render(request, "project/projectManagement.html", {
-        "project_list": projects_page_list,
+        "projects": projects_page_list,
         "pages": pages,
     })
 
@@ -143,13 +143,25 @@ def projectMain(request, pid):
                 current_tag = Tags.objects.get(name=tag)
                 current_tag.project.add(current_project)
                 current_tag.story.add(current_story)
-                
-    stories = current_project.story.all()
-    for story in stories:
+    
+    # pagination based on chronological order
+    stories = current_project.story.all().order_by("-date")
+    story_paginator = Paginator(stories, 5)
+    pages = range(1, story_paginator.num_pages + 1)
+
+    page_num = request.GET.get("page")
+    story_page = story_paginator.get_page(page_num)
+    story_page_list = story_page.object_list
+    for story in story_page_list:
         story.tag_list = [t.name for t in story.tags.all()]
         if not story.tag_list:
             story.tag_list = ['none']
+
     return render(request, "project/projectMain.html", {
         "project": current_project,
-        "stories": stories,
+        "stories": story_page_list,
+        "pages": pages,
     })
+
+def storyMain(request, pid, sid):
+    return render(request, "mainFrame/mainFrame.html")

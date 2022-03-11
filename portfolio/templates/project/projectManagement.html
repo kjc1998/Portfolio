@@ -12,11 +12,11 @@
         <th>Ongoing</th>
         {% if request.user.is_authenticated %}<th>Action</th>{% endif %}
     </tr>
-    {% for project in project_list %}
+    {% for project in projects %}
 
         <!-- View Project -->
         <tr id="projectView_{{ project.id }}">
-            <td><a href="{% url 'project:projectMain' project.id %}">{{ project.name }}</a></td>
+            <td><a href="{% url 'project:projectMain' pid=project.id %}">{{ project.name }}</a></td>
             <td>{{ project.start_date }}</td>
             {% if project.ongoing == True %}<td></td>{% else %}<td>{{ project.end_date }}</td>{% endif %}
             <td>{% for tag in project.tag_list %}<li class="tags">{{ tag }}</li>{% endfor %}</td>

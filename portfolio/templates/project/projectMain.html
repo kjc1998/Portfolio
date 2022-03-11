@@ -3,121 +3,128 @@
 {% block title %}<title>KJ Chow Project</title>{% endblock %}
 
 {% block content %}
-<table id="storyTable">
-    <tr>
-        <th>Name</th>
-        <th>Date</th>
-        <th>Tags</th>
-    </tr>
-    {% for story in stories %}
-    <tr>
-        <td><a href="$">{{ story.name }}</a></td>
-        <td>{{ story.date }}</td>
-        <td>
-            {% for tag in story.tag_list %}
-                <li class="tags">{{ tag }}</li>
-            {% endfor %}
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+    <table id="storyTable">
+        <tr>
+            <th>Name</th>
+            <th>Date</th>
+            <th>Tags</th>
+        </tr>
+        {% for story in stories %}
+        <tr>
+            <td><a href="{% url 'project:storyMain' pid=project.id sid=story.id %}">{{ story.name }}</a></td>
+            <td>{{ story.date }}</td>
+            <td>
+                {% for tag in story.tag_list %}
+                    <li class="tags">{{ tag }}</li>
+                {% endfor %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
 
-<!-- New Story Drop Down -->
-{% if request.user.is_authenticated %}
-    <div id="storyNewDiv">
-        <label for="storyNew" class="input-group"><p class="buttonText">New/Hide</p></label>
-        <input id="storyNew" type="checkbox">
+    <!-- New Story Drop Down -->
+    {% if request.user.is_authenticated %}
+        <div id="storyNewDiv">
+            <label for="storyNew" class="input-group"><p class="buttonText">New/Hide</p></label>
+            <input id="storyNew" type="checkbox">
 
-        <table class="storySlide">  
-            <tbody>
-                <form action="{% url 'project:projectMain' project.id %}" method="POST" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <tr>
-                        <td>Name:</td>
-                        <td><input type="text" id="storyName_new" name="storyName_new" placeholder="Story" required></td>
-                    </tr>
-                    <tr>
-                        <td>Date:</td>
-                        <td><input type="date" id="storyDate_new" name="storyDate_new" required></td>
-                    </tr>
-                    <tr>
-                        <td>Tags:<br>(Press enter or add a comma after each tag)</td>
-                        <td id="tagsColumn">
-                            <input type="text" id="storyTags_new" name="storyTags_new" placeholder="New Tags" onkeydown="return event.key != 'Enter';">
-                            <input type="hidden" id="storyTags_final" name="storyTags_final" value="">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Image:</td>
-                        <td><input type="file" id="storyImage_new" name="storyImage_new" accept="image/*"/></td>
-                    </tr>
-                    <tr>
-                        <td>Content:</td>
-                        <td><textarea id="storyContent_new" name="storyContent_new" cols="40" rows="5" placeholder="Content" required></textarea></td>
-                    </tr>
-                    <tr>
-                        <td><input type="submit" name="storyNew_add"/></td></tr>
-                </form>
-            </tbody>
-        </table>
+            <table class="storySlide">  
+                <tbody>
+                    <form action="{% url 'project:projectMain' project.id %}" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <tr>
+                            <td>Name:</td>
+                            <td><input type="text" id="storyName_new" name="storyName_new" placeholder="Story" required></td>
+                        </tr>
+                        <tr>
+                            <td>Date:</td>
+                            <td><input type="date" id="storyDate_new" name="storyDate_new" required></td>
+                        </tr>
+                        <tr>
+                            <td>Tags:<br>(Press enter or add a comma after each tag)</td>
+                            <td id="tagsColumn">
+                                <input type="text" id="storyTags_new" name="storyTags_new" placeholder="New Tags" onkeydown="return event.key != 'Enter';">
+                                <input type="hidden" id="storyTags_final" name="storyTags_final" value="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Image:</td>
+                            <td><input type="file" id="storyImage_new" name="storyImage_new" accept="image/*"/></td>
+                        </tr>
+                        <tr>
+                            <td>Content:</td>
+                            <td><textarea id="storyContent_new" name="storyContent_new" cols="40" rows="5" placeholder="Content" required></textarea></td>
+                        </tr>
+                        <tr>
+                            <td><input type="submit" name="storyNew_add"/></td></tr>
+                    </form>
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+    <!-- Pagination -->
+    <div id="pagination">
+        {% for i in pages %}
+            <a href="{% url 'project:projectMain' pid=project.id %}?page={{ i }}">{{ i }}</a>
+        {% endfor %}
     </div>
-{% endif %}
 
-<!-- DOM handling -->
-<script>
-    Date.prototype.toDateInputValue = (function() {
-        var local = new Date(this);
-        local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
-        return local.toJSON().slice(0,10);
-    });
-    document.getElementById("storyDate_new").value = new Date().toDateInputValue();
+    <!-- DOM handling -->
+    <script>
+        Date.prototype.toDateInputValue = (function() {
+            var local = new Date(this);
+            local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+            return local.toJSON().slice(0,10);
+        });
+        document.getElementById("storyDate_new").value = new Date().toDateInputValue();
 
-    tag_input = document.getElementById("storyTags_new");
+        tag_input = document.getElementById("storyTags_new");
 
-    let tags = [];
-    function appendToHiddenTag(){
-        hidden_tag = document.getElementById("storyTags_final")
-        hidden_tag.value = ""; // reset to default before readjust
-        for(i=0;i<tags.length;++i){
-            hidden_tag.value += `,${tags[i]}`;
+        let tags = [];
+        function appendToHiddenTag(){
+            hidden_tag = document.getElementById("storyTags_final")
+            hidden_tag.value = ""; // reset to default before readjust
+            for(i=0;i<tags.length;++i){
+                hidden_tag.value += `,${tags[i]}`;
+            }
+            hidden_tag.value = hidden_tag.value.substring(1);
+            console.log(hidden_tag.value);
         }
-        hidden_tag.value = hidden_tag.value.substring(1);
-        console.log(hidden_tag.value);
-    }
 
-    function displayTag(){
-        $("#tagsColumn li").remove(); // remove all li before appending
-        tags.slice().reverse().forEach(tag=>{
-            let liTag = `<li class="tags">${tag} <i class="uit uit-multiply" onclick="removeTag(this, '${tag}')"></i></li>`;
-            document.getElementById("tagsColumn").insertAdjacentHTML("afterbegin", liTag);
-        })
-    }
+        function displayTag(){
+            $("#tagsColumn li").remove(); // remove all li before appending
+            tags.slice().reverse().forEach(tag=>{
+                let liTag = `<li class="tags">${tag} <i class="uit uit-multiply" onclick="removeTag(this, '${tag}')"></i></li>`;
+                document.getElementById("tagsColumn").insertAdjacentHTML("afterbegin", liTag);
+            })
+        }
 
-    function removeTag(element, tag){
-        let index = tags.indexOf(tag);
-        tags = [...tags.slice(0, index), ...tags.slice(index + 1)];
-        displayTag();
-        appendToHiddenTag();
-    }
-
-    function addTag(e){
-        if(e.key=="Enter"){
-            let tag = e.target.value.replace(/\s+/g, " ");
-            if(tag.length > 0){
-                let tag_array = tag.split(",").map(element => element.trim());
-                let unique_array = [...new Set(tag_array)];
-                unique_array.forEach(tag=>{
-                    if(!tags.includes(tag)){
-                        tags.push(tag.toLowerCase());
-                    }
-                });
-                displayTag();
-            };
-            e.target.value = ""; // clear input field
+        function removeTag(element, tag){
+            let index = tags.indexOf(tag);
+            tags = [...tags.slice(0, index), ...tags.slice(index + 1)];
+            displayTag();
             appendToHiddenTag();
         }
-    };
 
-    tag_input.addEventListener("keyup", addTag);
-</script>
+        function addTag(e){
+            if(e.key=="Enter"){
+                let tag = e.target.value.replace(/\s+/g, " ");
+                if(tag.length > 0){
+                    let tag_array = tag.split(",").map(element => element.trim());
+                    let unique_array = [...new Set(tag_array)];
+                    unique_array.forEach(tag=>{
+                        if(!tags.includes(tag)){
+                            tags.push(tag.toLowerCase());
+                        }
+                    });
+                    displayTag();
+                };
+                e.target.value = ""; // clear input field
+                appendToHiddenTag();
+            }
+        };
+
+        tag_input.addEventListener("keyup", addTag);
+    </script>
 {% endblock %}

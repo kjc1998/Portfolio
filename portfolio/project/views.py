@@ -1,6 +1,6 @@
+import base64
 from datetime import datetime
 from django.shortcuts import render
-from django.db.models import Q
 from django.db.utils import IntegrityError
 from django.utils.datastructures import MultiValueDictKeyError
 
@@ -163,4 +163,11 @@ def storyMain(request, pid, sid):
     except Story.DoesNotExist:
         return error_page(request, 500, "No such Story exists")
     
-    return render(request, "mainFrame/mainFrame.html")
+    # Image handling
+    try:
+        current_story.primary_image = base64.b64encode(current_story.primary_image).decode("utf-8")
+    except TypeError:
+        current_story.primary_image = None
+    return render(request, "project/projectStory.html",{
+        "story": current_story,
+    })

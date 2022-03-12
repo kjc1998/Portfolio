@@ -1,5 +1,3 @@
-import os
-import json
 import base64
 from django.shortcuts import render
 from cv.models import CVS

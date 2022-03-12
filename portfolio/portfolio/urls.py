@@ -17,12 +17,11 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from portfolio.settings import ROOT_URL
 
 urlpatterns = [
-    path(f"{ROOT_URL}/", include("django.contrib.auth.urls")),
-    path(f"{ROOT_URL}/admin", admin.site.urls),
-    path(f"{ROOT_URL}/main", include("mainFrame.urls")),
-    path(f"{ROOT_URL}/cv", include("cv.urls")),
-    path(f"{ROOT_URL}/project", include("project.urls")),
+    path(f"/", include("django.contrib.auth.urls")),
+    path(f"admin/", admin.site.urls),
+    path(f"main/", include("mainFrame.urls")),
+    path(f"cv/", include("cv.urls")),
+    path(f"project/", include("project.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

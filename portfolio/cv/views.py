@@ -2,9 +2,10 @@ import json
 import base64
 import datetime
 from django.shortcuts import render
-from django.core.paginator import Paginator
 from django.db.utils import IntegrityError
-from .models import CVS
+
+from generic_functions import error_page, pagination_handling
+from cv.models import CVS
 
 
 def cvManagement(request):
@@ -12,10 +13,8 @@ def cvManagement(request):
         name = "Kai Jie"
     else:
         name = "Guest"
-        return render(request, "defaultError.html", {
-            "error_status": 403,
-            "error_message": "Please login to enter this site",
-        }, status=403)
+        return error_page(request, 403, "Please login to enter this site")
+        
     if request.method == "POST":
         if "cvUploadName" in request.POST:
             # check pdf type
@@ -34,15 +33,9 @@ def cvManagement(request):
                     # have existed before (undo previous adjustments)
                     current_active.active = True
                     current_active.save()
-                    return render(request, "defaultError.html", {
-                        "error_status": 422,
-                        "error_message": "This file already existed",
-                    }, status=422)
+                    return error_page(request, 422, "This file already existed")
             else:
-                return render(request, "defaultError.html", {
-                    "error_status": 422,
-                    "error_message": "Please upload pdf type file only",
-                }, status=422)
+                return error_page(request, 422, "Invalid file type, only accepts pdf")
         else:
             if "activateCV" in request.POST:
                 # set active
@@ -72,27 +65,21 @@ def cvManagement(request):
                         next_active.save()
     cv_active = CVS.objects.filter(active=True).first()
     cv_files = CVS.objects.exclude(active=True).all().order_by("-id")
-    cv_paginator = Paginator(cv_files, 4)
-    page_list = range(1, cv_paginator.num_pages+1)
 
-    # Pagination
-    page_num = request.GET.get("page")
-    cv_page = cv_paginator.get_page(page_num)
-    cv_page_list = cv_page.object_list
-
+    cv_page_list, pages = pagination_handling(cv_files, 4, request)
     # active cv in all pages
     dic_of_cvs = {
         cv_active.id: [cv_active.name,
-                       cv_active.date.strftime("%m/%d/%Y"),
+                       cv_active.date.strftime("%Y/%m/%d"),
                        base64.b64encode(cv_active.data).decode("utf-8"),
                        cv_active.active]
     }
     for cv_file in cv_page_list:
-        dic_of_cvs[cv_file.id] = [cv_file.name, cv_file.date.strftime("%m/%d/%Y"), base64.b64encode(
+        dic_of_cvs[cv_file.id] = [cv_file.name, cv_file.date.strftime("%Y/%m/%d"), base64.b64encode(
             cv_file.data).decode("utf-8"), cv_file.active]
 
     return render(request, "cv/cvManagement.html", {
         "name": name.title(),
-        "pages": page_list,
+        "pages": pages,
         "cv_files": json.dumps(dic_of_cvs) if dic_of_cvs else None,
     })

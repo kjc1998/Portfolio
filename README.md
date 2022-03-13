@@ -12,7 +12,7 @@
 
 <br>
 
-# Setting Up:
+## Setting Up:
 
 create .env at root folder (Portfolio)
 
@@ -58,7 +58,7 @@ create .env at root folder (Portfolio)
 
 <br>
 
-# Links
+## Links
 
 <table>
    <tr>

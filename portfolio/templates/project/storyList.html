@@ -3,6 +3,7 @@
 {% block title %}<title>KJ Chow Project</title>{% endblock %}
 
 {% block content %}
+    <a href="{% url 'project:projectList' %}">&lt Project List</a>
     <table id="storyTable">
         <tr>
             <th>Name</th>
@@ -30,7 +31,7 @@
 
             <table class="storySlide">  
                 <tbody>
-                    <form action="{% url 'project:projectMain' project.id %}" method="POST" enctype="multipart/form-data">
+                    <form action="{% url 'project:storyList' project.id %}" method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
                         <tr>
                             <td>Name:</td>
@@ -66,7 +67,7 @@
     <!-- Pagination -->
     <div id="pagination">
         {% for i in pages %}
-            <a href="{% url 'project:projectMain' pid=project.id %}?page={{ i }}">{{ i }}</a>
+            <a href="{% url 'project:storyList' pid=project.id %}?page={{ i }}">{{ i }}</a>
         {% endfor %}
     </div>
 

@@ -16,7 +16,7 @@
 
         <!-- View Project -->
         <tr id="projectView_{{ project.id }}">
-            <td><a href="{% url 'project:projectMain' pid=project.id %}">{{ project.name }}</a></td>
+            <td><a href="{% url 'project:storyList' pid=project.id %}">{{ project.name }}</a></td>
             <td>{{ project.start_date }}</td>
             {% if project.ongoing == True %}<td></td>{% else %}<td>{{ project.end_date }}</td>{% endif %}
             <td>{% for tag in project.tag_list %}<li class="tags">{{ tag }}</li>{% endfor %}</td>
@@ -24,7 +24,7 @@
             {% if request.user.is_authenticated %}
                 <td>
                     <button name="editProject" type="button" onclick="editProjectFunction('{{ project.id }}', 'projectView_{{ project.id }}', 'projectEdit_{{ project.id }}')">Edit</button>
-                    <form action="{% url 'project:projectManagement' %}" method="POST">
+                    <form action="{% url 'project:projectList' %}" method="POST">
                         {% csrf_token %}
                         <button name="deleteProject" value="{{ project.id }}">Delete</button>
                     </form>
@@ -35,7 +35,7 @@
         <!-- Edit Project -->
         {% if request.user.is_authenticated %}
             <tr id="projectEdit_{{ project.id }}" style="display: none;">
-                <form action="{% url 'project:projectManagement' %}" method="POST">
+                <form action="{% url 'project:projectList' %}" method="POST">
                     {% csrf_token %}
                     <input type="hidden" id="projectID" name="projectID" value="{{ project.id }}">
                     <td><input type="text" id="projectName_{{ project.id }}" name="projectName_{{ project.id }}" value="{{ project.name }}" required></td>
@@ -63,7 +63,7 @@
     <!-- New Project -->
     {% if request.user.is_authenticated %}
         <tr id="projectNew_new">
-            <form action="{% url 'project:projectManagement' %}" method="POST">
+            <form action="{% url 'project:projectList' %}" method="POST">
                 {% csrf_token %}
                 <td><input type="text" id="projectName_new" name="projectName_new" required></td>
                 <td><input type="date" id="projectStart_new" name="projectStart_new" onchange="minEndDate('new')" required></td>
@@ -82,7 +82,7 @@
     <!-- Pagination -->
     <div id="pagination">
         {% for i in pages %}
-            <a href="{% url 'project:projectManagement' %}?page={{ i }}">{{ i }}</a>
+            <a href="{% url 'project:projectList' %}?page={{ i }}">{{ i }}</a>
         {% endfor %}
     </div>
 

@@ -4,11 +4,11 @@ from django.shortcuts import render
 from django.db.utils import IntegrityError
 from django.utils.datastructures import MultiValueDictKeyError
 
-from generic_functions import error_page, pagination_handling
+from generic_functions import error_page, pagination_handling, get_stories
 from project.models import Project, Story, Tags
 
 
-def projectManagement(request):
+def projectList(request):
     if request.method == "POST":
         if request.user.is_authenticated:
             if "editProject" in request.POST:
@@ -81,13 +81,13 @@ def projectManagement(request):
         project.tag_list = [t.name for t in project.tags.all()]
         if not project.tag_list:
             project.tag_list = ["none"]
-    return render(request, "project/projectManagement.html", {
+    return render(request, "project/projectList.html", {
         "projects": projects_page_list,
         "pages": pages,
     })
 
 
-def projectMain(request, pid):
+def storyList(request, pid):
     try:
         current_project = Project.objects.get(id=pid)
     except Project.DoesNotExist:
@@ -151,7 +151,7 @@ def projectMain(request, pid):
         if not story.tag_list:
             story.tag_list = ['none']
 
-    return render(request, "project/projectMain.html", {
+    return render(request, "project/storyList.html", {
         "project": current_project,
         "stories": story_page_list,
         "pages": pages,
@@ -168,6 +168,11 @@ def storyMain(request, pid, sid):
         current_story.primary_image = base64.b64encode(current_story.primary_image).decode("utf-8")
     except TypeError:
         current_story.primary_image = None
-    return render(request, "project/projectStory.html",{
+    
+    # Stories: next and previous
+    prev, next = get_stories(current_story)
+    return render(request, "project/storyMain.html",{
         "story": current_story,
+        "previous_story": prev,
+        "next_story": next
     })

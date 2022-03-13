@@ -23,7 +23,7 @@
 		<div id="navBar">
 			<ul>
 				<li><a href="{% url 'mainFrame:mainFrame' %}">Home</a></li>
-				<li><a href="{% url 'project:projectManagement' %}">Project</a></li>
+				<li><a href="{% url 'project:projectList' %}">Project</a></li>
 				{% if request.user.is_authenticated %}
 					<li><a href="{% url 'cv:cvManagement' %}">CV</a></li>
 				{% endif %}

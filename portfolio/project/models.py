@@ -26,5 +26,4 @@ class Tags(models.Model):
     # Tags with Many to Many Relationship
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=100, unique=True, null=False)
-    project = models.ManyToManyField(Project, related_name="tags")
     story = models.ManyToManyField(Story, related_name="tags")

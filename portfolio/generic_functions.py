@@ -2,7 +2,7 @@ import requests
 from typing import List
 from django.shortcuts import render
 from django.core.paginator import Paginator
-from project.models import Story, Project
+from project.models import Story, Project, Tags
 
 def error_page(request: requests.Response, error_status: int, message: str):
     """
@@ -24,7 +24,9 @@ def pagination_handling(item_files: List, item_per_page: int, request: requests.
     """
     paginator = Paginator(item_files, item_per_page)
     pages = range(1, paginator.num_pages+1)
-    page_num = int(request.GET.get("page").rstrip('/'))
+    page_num = request.GET.get("page")
+    if page_num:
+        page_num = int(request.GET.get("page").rstrip('/'))
     item_page = paginator.get_page(page_num)
     item_page_list = item_page.object_list
     return item_page_list, pages
@@ -48,3 +50,11 @@ def text_area_line_parser(text_string: str):
     text_string = text_string.replace("\n", "<br/>")
     text_string = text_string.replace("\r", "<br/>")
     return text_string
+
+
+def clear_unused_tags():
+    tags = Tags.objects.all()
+    for tag in tags:
+        if not tag.story.all():
+            tag.delete()
+    return None

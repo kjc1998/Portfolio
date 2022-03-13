@@ -1,10 +1,17 @@
+import json
 import base64
 from datetime import datetime
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.db.utils import IntegrityError
 from django.utils.datastructures import MultiValueDictKeyError
 
-from generic_functions import error_page, pagination_handling, get_stories, text_area_line_parser
+from generic_functions import (
+    error_page,
+    pagination_handling,
+    get_stories,
+    text_area_line_parser,
+    clear_unused_tags,
+)
 from project.models import Project, Story, Tags
 
 
@@ -78,7 +85,12 @@ def projectList(request):
     for project in projects_page_list:
         project.start_date = project.start_date.strftime("%Y-%m-%d")
         project.end_date = project.end_date.strftime("%Y-%m-%d")
-        project.tag_list = [t.name for t in project.tags.all()]
+
+        tag_list = []
+        for story in project.story.all():
+            tag_list += [t.name for t in story.tags.all()]
+        project.tag_list = list(set(tag_list))
+
         if not project.tag_list:
             project.tag_list = ["none"]
     return render(request, "project/projectList.html", {
@@ -135,10 +147,15 @@ def storyList(request, pid):
                     
                     # Many-to-Many relationship
                     current_tag = Tags.objects.get(name=tag)
-                    current_tag.project.add(current_project)
                     current_tag.story.add(current_story)
+                clear_unused_tags()
         else:
             return error_page(request, 403, "Please login to enter this site")
+
+    ### GET METHOD ###
+
+    # Most updated version
+    current_project = Project.objects.get(id=pid)
 
     # Pagination
     stories = current_project.story.all().order_by("-date")
@@ -160,21 +177,92 @@ def storyList(request, pid):
 def storyMain(request, pid, sid):
     try:
         current_story = Story.objects.get(id=sid, project=pid)
+        current_project = Project.objects.get(id=pid)
     except Story.DoesNotExist:
         return error_page(request, 500, "No such Story exists")
     
+    if request.method == "POST":
+        if request.user.is_authenticated:
+            if "saveDetailsButton" in request.POST:
+                field_entries = request.POST
+                name = str(field_entries["storyName_edit"])
+                date = datetime.strptime(field_entries["storyDate_edit"], "%Y-%m-%d")
+                tags = [tag.strip() for tag in field_entries["storyTags_final"].split(",")]
+                content = text_area_line_parser(str(field_entries["storyContent_edit"]))
+
+                # Check name
+                try:
+                    if Story.objects.get(name=name) and name!=current_story.name:
+                        return error_page(request, 400, f"This name has already been taken")
+                except Story.DoesNotExist:
+                    pass
+                
+
+                # Check date (inclusive)
+                if not (date.date() >= current_project.start_date and date.date() <= current_project.end_date):
+                    return error_page(request, 400, f"Date is out of project range. Project Date: {current_project.start_date} till {current_project.end_date}")
+                
+                # Edit story details
+                current_story.name = name
+                current_story.date = date
+                current_story.content = content
+                current_story.save()
+                
+                # Tags handling
+                current_story = Story.objects.get(name=name)
+                for tag in current_story.tags.all():
+                    current_story.tags.remove(tag)
+                for tag in tags:
+                    if tag == "":
+                        break
+                    try:
+                        new_tag_instance = Tags(name=tag)
+                        new_tag_instance.save()
+                    except IntegrityError:
+                        pass
+                    current_tag = Tags.objects.get(name=tag)
+                    current_tag.story.add(current_story)
+                clear_unused_tags()
+            elif "saveImageButton" in request.POST:
+                try:
+                    image_bytes_data = request.FILES["storyImage_new"].file.read()
+                except KeyError:
+                    image_bytes_data = None
+                
+                # Check image
+                if image_bytes_data:
+                    if "image" not in request.FILES["storyImage_new"].content_type:
+                        return error_page(request, 400, "Invalid file type")
+                current_story.primary_image = image_bytes_data
+                current_story.save()
+            elif "deleteButton" in request.POST:
+                current_story.delete()
+                return redirect("project:storyList", pid=current_project.id)
+        else:
+            return error_page(request, 403, "Please login to enter this site")
+
+
+    ### GET ###
+
+    # Most updated version
+    current_story = Story.objects.get(id=sid, project=pid)
+    current_project = Project.objects.get(id=pid)
+
     # Image handling
     try:
         current_story.primary_image = base64.b64encode(current_story.primary_image).decode("utf-8")
     except TypeError:
         current_story.primary_image = None
     
-    # Date format handling
+    # Format handling
     current_story.date = current_story.date.strftime("%Y-%m-%d")
+    current_story.content = json.dumps(current_story.content)
+    current_story.tag_list = [t.name for t in current_story.tags.all()]
+
     # Stories: next and previous
     prev, next = get_stories(current_story)
-    print(current_story.content)
     return render(request, "project/storyMain.html",{
+        "project": current_project,
         "story": current_story,
         "previous_story": prev,
         "next_story": next

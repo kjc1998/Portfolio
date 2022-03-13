@@ -3,31 +3,178 @@
 {% block title %}<title>KJ Chow Stories</title>{% endblock %}
 
 {% block content %}
+    <!-- Header Story -->
+    <a href="{% url 'project:storyList' pid=project.id %}">&lt Story List</a>
+    <div id="storyNav">
+        {% if previous_story %}<a id="storyPrev" href="{% url 'project:storyMain' pid=project.id sid=previous_story.id %}">Prev</a>{% endif %}
+        {% if next_story %}<a id="storyNext" href="{% url 'project:storyMain' pid=project.id sid=next_story.id %}">Next</a>{% endif %}
+    </div>
 
-<a href="{% url 'project:storyList' pid=story.project.id %}">&lt Story List</a>
-<div id="storyNav">
-    {% if previous_story %}
-        <a id="storyPrev" href="{% url 'project:storyMain' pid=story.project.id sid=previous_story.id %}">Prev</a>
-    {% endif %}
-    {% if next_story %}
-        <a id="storyNext" href="{% url 'project:storyMain' pid=story.project.id sid=next_story.id %}">Next</a>
-    {% endif %}
-</div>
-<h1>{{ story.name }}</h1>
-<h2>{{ story.date }}</h2>
+    <!-- View Story -->
+    <div id="viewStory">
+        {% if request.user.is_authenticated %}
+            <div class="rightButtonTop"><button name="editButton" type="button" onclick="editStoryFunction()">Edit</button></div>
+        {% endif %}
+        
+        <h1>{{ story.name }}</h1>
+        <h2>{{ story.date }}</h2>
+        <h3>
+            {% if story.tag_list|length > 0 %}
+                {% for tag in story.tag_list %}
+                    <li class="tags">{{ tag }}</li>
+                {% endfor %}
+            {% else %}
+                <li class="tags">none</li>
+            {% endif %}
+        </h3>
+        {% if story.primary_image != none %}
+            <img src="data:image/png;base64, {{ story.primary_image }}">
+        {% endif %}
+        <div id="storyContent">{{ story.content }}</div>
+    </div>
 
-{% if story.primary_image != none %}
-    <img src="data:image/png;base64, {{ story.primary_image }}">
-{% endif %}
-<div id="storyContent">
-    {{ story.content }}
-</div>
-<script>
-    function textAreaHandling(){
-        var storyContent = "{{ story.content|safe }}";
-        textAreaDiv = document.getElementById("storyContent");
-        textAreaDiv.innerHTML = storyContent;
-    }
-    textAreaHandling();
-</script>
+    <!-- Edit Story -->
+    {% if request.user.is_authenticated %}
+
+        <div id="editStory" style="display: none;">
+            <!-- Details Panel -->
+            <form action="{% url 'project:storyMain' pid=project.id sid=story.id %}" method="POST">
+                {% csrf_token %}
+                <div class="rightButtonTop"><button name="cancelButton" type="button" onclick="editStoryFunction()">Cancel</button></div>
+                <table id="tableStory">
+                    <h1>Details</h1>
+                    <tbody>
+                        <tr>
+                            <td>Name:</td>
+                            <td><input type="text" id="storyName_edit" name="storyName_edit" value="{{ story.name }}" required></td>
+                        </tr>
+                        <tr>
+                            <td>Date:</td>
+                            <td><input type="date" id="storyDate_edit" name="storyDate_edit" value="{{ story.date }}" required></td>
+                        </tr>
+                        <tr>
+                            <td>Tags:<br>(Press enter or add a comma after each tag)</td>
+                            <td id="tagsColumn">
+                                {% for tag in story.tag_list %}
+                                    <li class="tags">{{ tag }}<i class="uit uit-multiply" onclick="removeTag(this, '{{ tag }}')"></i></li>
+                                {% endfor %}
+                                <input type="text" id="storyTags_edit" name="storyTags_edit" onkeydown="return event.key != 'Enter';">
+                                <input type="hidden" id="storyTags_final" name="storyTags_final" value="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Content:</td>
+                            <td><textarea id="storyContent_edit" name="storyContent_edit" cols="40" rows="5" required></textarea></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="rightButtonBottom"><button name="saveDetailsButton" onclick="return confirmationPopUp(this)">Save</button></div>
+            </form>
+
+            <!-- Image Panel -->
+            <div id="imageStory">
+                <form action="{% url 'project:storyMain' pid=project.id sid=story.id %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <h1>Image</h1>
+                    {% if story.primary_image != none %}<img src="data:image/png;base64, {{ story.primary_image }}">{% endif %}
+                    <br />
+                    <input type="file" id="storyImage_new" name="storyImage_new" accept="image/*"/>
+                    <div class="rightButtonBottom"><button name="saveImageButton" onclick="return confirmationPopUp(this)">Save</button></div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Delete Story -->
+        <div id="deleteStory" style="display: none;">
+            <div class="rightButtonBottom">
+                <form action="{% url 'project:storyMain' pid=project.id sid=story.id %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <button name="deleteButton" onclick="return confirmationPopUp(this)">Delete Story</button>
+                </form>
+            </div>
+        </div>
+        
+    {% endif %}
+
+    <!-- DOM handling -->
+    <script>
+        // Text Area
+        function textAreaHandling(){
+            var textAreaDiv = document.getElementById("storyContent");
+            var textAreaEditDiv = document.getElementById("storyContent_edit");
+            var storyContent = {{ story.content|safe }};
+            
+            textAreaDiv.innerHTML = storyContent;
+            textAreaEditDiv.innerHTML = storyContent;
+        }
+
+        // Hide and Show buttons and divs
+        function editStoryFunction(){
+            var view_div = getElementByXpath("//div[@id='viewStory']");
+            var edit_div = getElementByXpath("//div[@id='editStory']");
+            var delete_div = getElementByXpath("//div[@id='deleteStory']");
+            if(view_div.style.display == ""){
+                view_div.style.display = "none";
+                edit_div.style.display = "";
+                delete_div.style.display = "";
+            }else{
+                view_div.style.display = "";
+                edit_div.style.display = "none";
+                delete_div.style.display = "none";
+            }
+        }
+
+        // Tags handling
+        tag_input = document.getElementById("storyTags_edit");
+        let tags = {{ story.tag_list|safe }};
+        
+        function appendToHiddenTag(){
+            hidden_tag = document.getElementById("storyTags_final")
+            hidden_tag.value = ""; // reset to default before readjust
+            for(i=0;i<tags.length;++i){
+                hidden_tag.value += `,${tags[i]}`;
+            }
+            hidden_tag.value = hidden_tag.value.substring(1);
+        }
+
+        function displayTag(){
+            $("#tagsColumn li").remove(); // remove all li before appending
+            tags.slice().reverse().forEach(tag=>{
+                let liTag = `<li class="tags">${tag} <i class="uit uit-multiply" onclick="removeTag(this, '${tag}')"></i></li>`;
+                document.getElementById("tagsColumn").insertAdjacentHTML("afterbegin", liTag);
+            })
+        }
+
+        function removeTag(element, tag){
+            let index = tags.indexOf(tag);
+            tags = [...tags.slice(0, index), ...tags.slice(index + 1)];
+            displayTag();
+            appendToHiddenTag();
+        }
+
+        function addTag(e){
+            if(e.key=="Enter"){
+                let tag = e.target.value.replace(/\s+/g, " ");
+                if(tag.length > 0){
+                    let tag_array = tag.split(",").map(element => element.trim());
+                    let unique_array = [...new Set(tag_array)];
+                    unique_array.forEach(tag=>{
+                        if(!tags.includes(tag)){
+                            tags.push(tag.toLowerCase());
+                        }
+                    });
+                    displayTag();
+                };
+                e.target.value = ""; // clear input field
+                appendToHiddenTag();
+            }
+        };
+        tag_input.addEventListener("keyup", addTag);
+
+        // Image handling
+
+        // To be run when page loaded
+        textAreaHandling();
+        appendToHiddenTag();
+    </script>
 {% endblock %}

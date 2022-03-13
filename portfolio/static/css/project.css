@@ -34,3 +34,30 @@ div#storyNav {
 div#storyNav > a#storyNext {
   margin-left: auto;
 }
+
+div#deleteStory,
+div#editStory,
+div#viewStory {
+  position: relative;
+}
+
+div#imageStory {
+  margin-top: 100px;
+}
+
+div.rightButtonTop {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+div.rightButtonBottom {
+  position: absolute;
+  right: 0;
+  margin-top: 30px;
+}
+
+#tableStory {
+  position: relative;
+  top: 40px;
+}

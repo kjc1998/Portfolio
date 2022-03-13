@@ -37,3 +37,8 @@ def get_stories(current_story: Story):
             prev_story = stories[i-1] if i-1>=0 else None
             next_story = stories[i+1] if i+1<len(stories) else None
     return prev_story, next_story
+
+def text_area_line_parser(text_string: str):
+    text_string = text_string.replace("\n", "<br/>")
+    text_string = text_string.replace("\r", "<br/>")
+    return text_string

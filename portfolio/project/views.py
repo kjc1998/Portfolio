@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.db.utils import IntegrityError
 from django.utils.datastructures import MultiValueDictKeyError
 
-from generic_functions import error_page, pagination_handling, get_stories
+from generic_functions import error_page, pagination_handling, get_stories, text_area_line_parser
 from project.models import Project, Story, Tags
 
 
@@ -76,8 +76,8 @@ def projectList(request):
 
     # Presentation
     for project in projects_page_list:
-        project.start_date = project.start_date.strftime("%Y/%m/%d")
-        project.end_date = project.end_date.strftime("%Y/%m/%d")
+        project.start_date = project.start_date.strftime("%Y-%m-%d")
+        project.end_date = project.end_date.strftime("%Y-%m-%d")
         project.tag_list = [t.name for t in project.tags.all()]
         if not project.tag_list:
             project.tag_list = ["none"]
@@ -100,7 +100,7 @@ def storyList(request, pid):
                 name = str(field_entries["storyName_new"])
                 date = datetime.strptime(field_entries["storyDate_new"], "%Y-%m-%d")
                 tags = [tag.strip() for tag in field_entries["storyTags_final"].split(",")]
-                content = str(field_entries["storyContent_new"])
+                content = text_area_line_parser(str(field_entries["storyContent_new"]))
                 try:
                     image_bytes_data = request.FILES["storyImage_new"].file.read()
                 except KeyError:
@@ -146,7 +146,7 @@ def storyList(request, pid):
 
     # Presentation
     for story in story_page_list:
-        story.date = story.date.strftime("%Y/%m/%d")
+        story.date = story.date.strftime("%Y-%m-%d")
         story.tag_list = [t.name for t in story.tags.all()]
         if not story.tag_list:
             story.tag_list = ['none']
@@ -169,8 +169,11 @@ def storyMain(request, pid, sid):
     except TypeError:
         current_story.primary_image = None
     
+    # Date format handling
+    current_story.date = current_story.date.strftime("%Y-%m-%d")
     # Stories: next and previous
     prev, next = get_stories(current_story)
+    print(current_story.content)
     return render(request, "project/storyMain.html",{
         "story": current_story,
         "previous_story": prev,

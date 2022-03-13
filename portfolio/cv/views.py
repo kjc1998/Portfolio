@@ -70,12 +70,12 @@ def cvManagement(request):
     # active cv in all pages
     dic_of_cvs = {
         cv_active.id: [cv_active.name,
-                       cv_active.date.strftime("%Y/%m/%d"),
+                       cv_active.date.strftime("%Y-%m-%d"),
                        base64.b64encode(cv_active.data).decode("utf-8"),
                        cv_active.active]
     }
     for cv_file in cv_page_list:
-        dic_of_cvs[cv_file.id] = [cv_file.name, cv_file.date.strftime("%Y/%m/%d"), base64.b64encode(
+        dic_of_cvs[cv_file.id] = [cv_file.name, cv_file.date.strftime("%Y-%m-%d"), base64.b64encode(
             cv_file.data).decode("utf-8"), cv_file.active]
 
     return render(request, "cv/cvManagement.html", {

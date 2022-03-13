@@ -14,11 +14,20 @@
     {% endif %}
 </div>
 <h1>{{ story.name }}</h1>
+<h2>{{ story.date }}</h2>
 
 {% if story.primary_image != none %}
     <img src="data:image/png;base64, {{ story.primary_image }}">
 {% endif %}
-<div>
+<div id="storyContent">
     {{ story.content }}
 </div>
+<script>
+    function textAreaHandling(){
+        var storyContent = "{{ story.content|safe }}";
+        textAreaDiv = document.getElementById("storyContent");
+        textAreaDiv.innerHTML = storyContent;
+    }
+    textAreaHandling();
+</script>
 {% endblock %}

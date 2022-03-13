@@ -71,6 +71,11 @@ def projectList(request):
         else:
             return error_page(request, 403, "Please login to enter this site")
 
+    ### GET METHOD ###
+
+    # Clear data
+    clear_unused_tags()
+
     # Update Ongoing Project with Time
     ongoing_projects = Project.objects.filter(ongoing=True).all()
     for ongoing_project in ongoing_projects:
@@ -148,11 +153,13 @@ def storyList(request, pid):
                     # Many-to-Many relationship
                     current_tag = Tags.objects.get(name=tag)
                     current_tag.story.add(current_story)
-                clear_unused_tags()
         else:
             return error_page(request, 403, "Please login to enter this site")
 
     ### GET METHOD ###
+
+    # Clear data
+    clear_unused_tags()
 
     # Most updated version
     current_project = Project.objects.get(id=pid)
@@ -222,7 +229,6 @@ def storyMain(request, pid, sid):
                         pass
                     current_tag = Tags.objects.get(name=tag)
                     current_tag.story.add(current_story)
-                clear_unused_tags()
             elif "saveImageButton" in request.POST:
                 try:
                     image_bytes_data = request.FILES["storyImage_new"].file.read()
@@ -242,7 +248,10 @@ def storyMain(request, pid, sid):
             return error_page(request, 403, "Please login to enter this site")
 
 
-    ### GET ###
+    ### GET METHOD ###
+
+    # Clear data
+    clear_unused_tags()
 
     # Most updated version
     current_story = Story.objects.get(id=sid, project=pid)

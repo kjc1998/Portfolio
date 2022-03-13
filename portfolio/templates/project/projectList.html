@@ -26,7 +26,7 @@
                     <button name="editProject" type="button" onclick="editProjectFunction('{{ project.id }}', 'projectView_{{ project.id }}', 'projectEdit_{{ project.id }}')">Edit</button>
                     <form action="{% url 'project:projectList' %}" method="POST">
                         {% csrf_token %}
-                        <button name="deleteProject" value="{{ project.id }}">Delete</button>
+                        <button name="deleteProject" value="{{ project.id }}" onclick="return confirmationPopUp(this)">Delete</button>
                     </form>
                 </td>
             {% endif %}
@@ -51,7 +51,7 @@
                             <label for="projectOngoing_{{ project.id }}"></label>
                     </td>
                     <td>
-                        <button name="editProject">Save</button>
+                        <button name="editProject" onclick="return confirmationPopUp(this)">Save</button>
                         <button name="cancelEdit" type="button" onclick="editProjectFunction('{{ project.id }}', 'projectEdit_{{ project.id }}', 'projectView_{{ project.id }}')">Cancel</button>
                     </td>
                 </form>

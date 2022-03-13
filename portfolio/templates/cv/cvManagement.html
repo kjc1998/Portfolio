@@ -101,11 +101,11 @@
                     cell_3.innerHTML = `
                         <form action="{% url 'cv:cvManagement' %}" method="POST">
                             {% csrf_token %}
-                            <button name="activateCV" value="${key}">Activate</button>
+                            <button name="activateCV" value="${key}" onclick="return confirmationPopUp(this)">Activate</button>
                         </form>
                         <form action="{% url 'cv:cvManagement' %}" method="POST">
                             {% csrf_token %}
-                            <button name="deleteCV" value="${key}">Delete</button>
+                            <button name="deleteCV" value="${key}" onclick="return confirmationPopUp(this)">Delete</button>
                         </form>
                     `;
                 }else{

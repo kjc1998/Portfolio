@@ -5,6 +5,9 @@ from django.core.paginator import Paginator
 from project.models import Story, Project
 
 def error_page(request: requests.Response, error_status: int, message: str):
+    """
+    Default error page when a certain exception has been caught
+    """
     return render(
         request,
         "defaultError.html",{
@@ -15,10 +18,13 @@ def error_page(request: requests.Response, error_status: int, message: str):
     )
 
 def pagination_handling(item_files: List, item_per_page: int, request: requests.Response):
+    """
+    Pagination handling that returns the items in that page
+    and the total page number
+    """
     paginator = Paginator(item_files, item_per_page)
     pages = range(1, paginator.num_pages+1)
-
-    page_num = request.GET.get("page")
+    page_num = int(request.GET.get("page").rstrip('/'))
     item_page = paginator.get_page(page_num)
     item_page_list = item_page.object_list
     return item_page_list, pages

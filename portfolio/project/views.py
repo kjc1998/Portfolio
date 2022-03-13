@@ -27,6 +27,11 @@ def projectList(request):
                 end = datetime.strptime(
                     field_entries["projectEnd_"+project_id], "%Y-%m-%d")
 
+                # Check date
+                if start.date() > end.date():
+                    return error_page(request, 400, f"Start date cannot be more than End date")
+                
+
                 edit_project = Project.objects.filter(id=int(project_id)).first()
                 edit_project.name = name
                 edit_project.start_date = start
@@ -40,16 +45,21 @@ def projectList(request):
                     edit_project.ongoing = False
                 edit_project.save()
 
-                # Handling all stories dates after date update
+                # Handling all stories dates before date update
+                stories_before = Story.objects.filter(project=project_id, date__lte=edit_project.start_date).all()
+                for story_before in stories_before:
+                    story_before.date = edit_project.start_date
+                    story_before.save()
                 stories_after = Story.objects.filter(project=project_id, date__gte=edit_project.end_date).all()
                 for story_after in stories_after:
-                    # set to new end date
                     story_after.date = edit_project.end_date
                     story_after.save()
+
             elif "deleteProject" in request.POST:
                 delete_project = Project.objects.filter(
                     id=int(request.POST["deleteProject"])).first()
                 delete_project.delete()
+
             elif "addProject" in request.POST:
                 try:
                     field_entries = request.POST
@@ -58,6 +68,10 @@ def projectList(request):
                         field_entries["projectStart_new"], "%Y-%m-%d")
                     end = datetime.strptime(
                         field_entries["projectEnd_new"], "%Y-%m-%d")
+                    # Check date
+                    if start.date() > end.date():
+                        return error_page(request, 400, f"Start date cannot be more than End date")
+                        
                     try:
                         ongoing = field_entries["projectOngoing_new"]
                         ongoing = True

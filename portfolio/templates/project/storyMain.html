@@ -5,12 +5,12 @@
 {% block content %}
 
 <a href="{% url 'project:storyList' pid=story.project.id %}">&lt Story List</a>
-<div style="display: flex; justify-content: space-between; ">
+<div id="storyNav">
     {% if previous_story %}
-        <a href="{% url 'project:storyMain' pid=story.project.id sid=previous_story.id %}">Prev</a>
+        <a id="storyPrev" href="{% url 'project:storyMain' pid=story.project.id sid=previous_story.id %}">Prev</a>
     {% endif %}
     {% if next_story %}
-        <a style="margin-left: auto;"href="{% url 'project:storyMain' pid=story.project.id sid=next_story.id %}">Next</a>
+        <a id="storyNext" href="{% url 'project:storyMain' pid=story.project.id sid=next_story.id %}">Next</a>
     {% endif %}
 </div>
 <h1>{{ story.name }}</h1>
@@ -18,4 +18,7 @@
 {% if story.primary_image != none %}
     <img src="data:image/png;base64, {{ story.primary_image }}">
 {% endif %}
+<div>
+    {{ story.content }}
+</div>
 {% endblock %}

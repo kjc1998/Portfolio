@@ -25,3 +25,12 @@ tbody {
   padding: 2px 10px;
   cursor: pointer;
 }
+
+div#storyNav {
+  display: flex;
+  justify-content: space-between;
+}
+
+div#storyNav > a#storyNext {
+  margin-left: auto;
+}

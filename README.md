@@ -70,7 +70,7 @@ create .env at root folder (Portfolio)
   <tr>
       <td>/main/</td>
       <td>
-         Home page for this application<br>
+         <b>Home Page</b><br><br>
          Featuring projects, cv and contact details
       </td>
   </tr>
@@ -78,7 +78,7 @@ create .env at root folder (Portfolio)
   <tr>
       <td>/cv/</td>
       <td>
-         CV management page<br>
+         <b>CV Management Page</b><br><br>
          Upload, Activate and Delete CV versions
       </td>
   </tr>
@@ -86,7 +86,7 @@ create .env at root folder (Portfolio)
   <tr>
       <td>/project/</td>
       <td>
-         Project listing<br>
+         <b>Project Listing</b><br><br>
          All projects that have been added to portfolio
       </td>
   </tr>
@@ -94,7 +94,7 @@ create .env at root folder (Portfolio)
   <tr>
       <td>/project/pid/</td>
       <td>
-         Story listing<br>
+         <b>Story Listing</b><br><br>
          Depicting all stories under this project in reverse chronological order
       </td>
   </tr>
@@ -102,7 +102,7 @@ create .env at root folder (Portfolio)
   <tr>
       <td>/project/pid/sid/</td>
       <td>
-         Story details<br>
+         <b>Story Page</b><br><br>
          Detailed event/contributions to the project (short story, image, and skill tags)
       </td>
   </tr>

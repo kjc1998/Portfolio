@@ -1,18 +1,20 @@
 # Portfolio
 
-## Progress:
+## Progress
 
-- Public View Setup [Done]
-- Personal Edit Setup [Done]
-- Project Page [Done]
-- Story Page [Done]
-- Filter Bar [0%]
-- UI [0%]
-- Google Cloud Hosting [0%]
+```
+1) Public View Setup      [Done]
+2) Personal Edit Setup    [Done]
+3) Project Page           [Done]
+4) Story Page             [Done]
+5) Filter Bar             [0%]
+6) UI                     [0%]
+7) Cloud Hosting          [0%]
+```
 
 <br>
 
-## Setting Up:
+## Setting Up
 
 create .env at root folder (Portfolio)
 

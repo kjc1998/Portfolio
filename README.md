@@ -114,9 +114,9 @@
 
 **Notes:**
 
-_~ Details concerning code development & adjustments to personal preferences_
+_Details concerning code development & adjustments to personal preferences_
 
-_~ Changes to UI and In-placed images_
+_Changes to UI and In-placed images_
 
 <br>
 

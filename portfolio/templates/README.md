@@ -31,13 +31,3 @@ defaultTemplate.html  : template for the entire application
 defaultError.html     : template for all error renders
 contactFooter.html    : template for contact details
 ```
-
-<br>
-
-## <ins>Overarching template files</ins>
-
-```
-defaultTemplate.html  : template for the entire application
-defaultError.html     : template for all error renders
-contactFooter.html    : template for contact details
-```

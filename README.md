@@ -70,15 +70,31 @@
   <tr>
       <td>/main/</td>
       <td>
-         <b>Home Page</b><br><br>
+         <b>Home Page</b><br>
          Featuring projects, cv and contact details
+      </td>
+  </tr>
+
+  <tr>
+      <td>/admin/</td>
+      <td>
+         <b>Admin Page</b><br>
+         Database overview
+      </td>
+  </tr>
+
+  <tr>
+      <td>/login/</td>
+      <td>
+         <b>Login Page</b><br>
+         Login as superuser for edit functionalities
       </td>
   </tr>
 
   <tr>
       <td>/cv/</td>
       <td>
-         <b>CV Management Page</b><br><br>
+         <b>CV Management Page</b><br>
          Upload, Activate and Delete CV versions
       </td>
   </tr>
@@ -86,7 +102,7 @@
   <tr>
       <td>/project/</td>
       <td>
-         <b>Project Listing</b><br><br>
+         <b>Project Listing</b><br>
          All projects that have been added to portfolio
       </td>
   </tr>
@@ -94,7 +110,7 @@
   <tr>
       <td>/project/pid/</td>
       <td>
-         <b>Story Listing</b><br><br>
+         <b>Story Listing</b><br>
          Depicting all stories under this project in reverse chronological order
       </td>
   </tr>
@@ -102,7 +118,7 @@
   <tr>
       <td>/project/pid/sid/</td>
       <td>
-         <b>Story Page</b><br><br>
+         <b>Story Page</b><br>
          Detailed event/contributions to the project (short story, image, and skill tags)
       </td>
   </tr>

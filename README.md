@@ -120,7 +120,7 @@ _Changes to UI and In-placed images_
 
 <br>
 
-[Individual Media Changes](https://github.com/kjc1998/Portfolio/tree/master/portfolio/media)
+[Individual Media Changes](https://github.com/kjc1998/Portfolio/tree/master/portfolio/media) (for simple changes only with the same template)
 
 [BackEnd Code Stucture](https://github.com/kjc1998/Portfolio/tree/master/portfolio)
 

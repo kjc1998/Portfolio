@@ -9,15 +9,22 @@ from cv.models import CVS
 
 
 def cvManagement(request):
+    """
+    URL: /CV/
+
+    GET: return list of CVs version and currently active CV (viewable by general public)
+
+    POST: Add, Activate and Delete CVs (only accessible when logged in)
+    """
+
     if request.user.is_authenticated:
-        name = "Kai Jie"
+        pass
     else:
-        name = "Guest"
         return error_page(request, 403, "Please login to enter this site")
         
     if request.method == "POST":
         if "cvUploadName" in request.POST:
-            # check pdf type
+            # Check pdf type
             if ".pdf" in str(request.FILES["cvFileUpload"]):
                 try:
                     check_current = CVS.objects.all()
@@ -30,15 +37,14 @@ def cvManagement(request):
                     new_cv_instance.save()
                     current_active.save()
                 except IntegrityError:
-                    # have existed before (undo previous adjustments)
+                    # Undo previous adjustments
                     current_active.active = True
                     current_active.save()
                     return error_page(request, 422, "This file already existed")
             else:
-                return error_page(request, 422, "Invalid file type, only accepts pdf")
+                return error_page(request, 422, "Invalid file type (pdf type only)")
         else:
             if "activateCV" in request.POST:
-                # set active
                 cv_id = request.POST["activateCV"]
                 try:
                     current_active = CVS.objects.get(active=True)
@@ -50,12 +56,9 @@ def cvManagement(request):
                 new_active_cv.active = True
                 new_active_cv.save()
             elif "deleteCV" in request.POST:
-                # delete cv
                 cv_id = request.POST["deleteCV"]
-
                 delete_cv = CVS.objects.get(id=int(cv_id))
                 delete_cv.delete()
-
                 try:
                     current_active = CVS.objects.get(active=True)
                 except CVS.DoesNotExist:
@@ -63,11 +66,16 @@ def cvManagement(request):
                     if next_active:
                         next_active.active = True
                         next_active.save()
-    cv_active = CVS.objects.filter(active=True).first()
-    cv_files = CVS.objects.exclude(active=True).all().order_by("-id")
+    
+    ### GET METHOD ###
 
+    cv_active = CVS.objects.filter(active=True).first()
+
+    # Pagination
+    cv_files = CVS.objects.exclude(active=True).all().order_by("-id")
     cv_page_list, pages = pagination_handling(cv_files, 4, request)
-    # active cv in all pages
+
+    # Data parsing
     dic_of_cvs = {
         cv_active.id: [cv_active.name,
                        cv_active.date.strftime("%Y-%m-%d"),
@@ -79,7 +87,6 @@ def cvManagement(request):
             cv_file.data).decode("utf-8"), cv_file.active]
 
     return render(request, "cv/cvManagement.html", {
-        "name": name.title(),
         "pages": pages,
         "cv_files": json.dumps(dic_of_cvs) if dic_of_cvs else None,
     })

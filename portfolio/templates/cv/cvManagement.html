@@ -25,6 +25,7 @@
             <input 
                 type="submit"
                 name="cvUploadName"
+                onclick="return confirmationPopUp(this)"
             />
         </form>
     </section>
@@ -129,7 +130,7 @@
                         <p>${cvName} &emsp; ${cvDate} </p>
                         <form action="{% url 'cv:cvManagement' %}" method="POST">
                             {% csrf_token %}
-                            <button name="deleteCV" value="${key}">Delete</button>
+                            <button name="deleteCV" value="${key}" onclick="return confirmationPopUp(this)">Delete</button>
                         </form>
                     `;
                 }

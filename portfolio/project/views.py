@@ -16,6 +16,14 @@ from project.models import Project, Story, Tags
 
 
 def projectList(request):
+    """
+    URL: /project/
+
+    GET: Show list of available projects with pagination of 5 per page
+
+    POST: Add, Edit, and Delete projects (only accessible when logged in)
+    """
+
     if request.method == "POST":
         if request.user.is_authenticated:
             if "editProject" in request.POST:
@@ -31,13 +39,11 @@ def projectList(request):
                 if start.date() > end.date():
                     return error_page(request, 400, f"Start date cannot be more than End date")
                 
-
                 edit_project = Project.objects.filter(id=int(project_id)).first()
                 edit_project.name = name
                 edit_project.start_date = start
                 try:
                     ongoing = field_entries["projectOngoing_"+project_id]
-                    # Default date
                     edit_project.end_date = datetime.now()
                     edit_project.ongoing = True
                 except MultiValueDictKeyError:
@@ -45,7 +51,7 @@ def projectList(request):
                     edit_project.ongoing = False
                 edit_project.save()
 
-                # Handling all stories dates before date update
+                # Auto update stories' dates
                 stories_before = Story.objects.filter(project=project_id, date__lte=edit_project.start_date).all()
                 for story_before in stories_before:
                     story_before.date = edit_project.start_date
@@ -68,6 +74,7 @@ def projectList(request):
                         field_entries["projectStart_new"], "%Y-%m-%d")
                     end = datetime.strptime(
                         field_entries["projectEnd_new"], "%Y-%m-%d")
+
                     # Check date
                     if start.date() > end.date():
                         return error_page(request, 400, f"Start date cannot be more than End date")
@@ -94,11 +101,10 @@ def projectList(request):
     projects = Project.objects.all().order_by("-start_date")
     projects_page_list, pages = pagination_handling(projects, 5, request)
 
-    # Presentation
+    # Data Parsing
     for project in projects_page_list:
         project.start_date = project.start_date.strftime("%Y-%m-%d")
         project.end_date = project.end_date.strftime("%Y-%m-%d")
-
         tag_list = []
         for story in project.story.all():
             tag_list += [t.name for t in story.tags.all()]
@@ -111,10 +117,18 @@ def projectList(request):
 
 
 def storyList(request, pid):
+    """
+    URL: /project/{pid}/
+
+    GET: Show list of stories under this project ID
+
+    POST: Add stories tied to this project ID (only accessible when logged in)
+    """
+
     try:
         current_project = Project.objects.get(id=pid)
     except Project.DoesNotExist:
-        return error_page(request, 500, "No such project exists")
+        return error_page(request, 500, "No such Project")
 
     if request.method == "POST":
         if request.user.is_authenticated:
@@ -136,7 +150,7 @@ def storyList(request, pid):
                 # Check image
                 if image_bytes_data:
                     if "image" not in request.FILES["storyImage_new"].content_type:
-                        return error_page(request, 400, "Invalid file type")
+                        return error_page(request, 400, "Invalid file type (image type only)")
 
                 # Add new story
                 try:
@@ -155,8 +169,6 @@ def storyList(request, pid):
                         new_tag_instance.save()
                     except IntegrityError:
                         pass
-                    
-                    # Many-to-Many relationship
                     current_tag = Tags.objects.get(name=tag)
                     current_tag.story.add(current_story)
         else:
@@ -167,14 +179,14 @@ def storyList(request, pid):
     # Clear data
     clear_unused_tags()
 
-    # Most updated version
+    # Most updated from database
     current_project = Project.objects.get(id=pid)
 
     # Pagination
     stories = current_project.story.all().order_by("-date")
     story_page_list, pages = pagination_handling(stories, 5, request)
 
-    # Presentation
+    # Data parsing
     for story in story_page_list:
         story.date = story.date.strftime("%Y-%m-%d")
         story.tag_list = [t.name for t in story.tags.all()]
@@ -186,11 +198,19 @@ def storyList(request, pid):
     })
 
 def storyMain(request, pid, sid):
+    """
+    URL: /project/{pid}/{sid}/
+
+    GET: return story view page
+
+    POST: Edit and Delete story details (only accessible when logged in)
+    """
+
     try:
         current_story = Story.objects.get(id=sid, project=pid)
         current_project = Project.objects.get(id=pid)
     except Story.DoesNotExist:
-        return error_page(request, 500, "No such Story exists")
+        return error_page(request, 500, "No such Story")
     
     if request.method == "POST":
         if request.user.is_authenticated:
@@ -212,14 +232,13 @@ def storyMain(request, pid, sid):
                 # Check date (inclusive)
                 if not (date.date() >= current_project.start_date and date.date() <= current_project.end_date):
                     return error_page(request, 400, f"Date is out of project range. Project Date: {current_project.start_date} till {current_project.end_date}")
-                
-                # Edit story details
+
                 current_story.name = name
                 current_story.date = date
                 current_story.content = content
                 current_story.save()
                 
-                # Tags handling
+                # Tags handling (clear current and append new)
                 current_story = Story.objects.get(name=name)
                 for tag in current_story.tags.all():
                     current_story.tags.remove(tag)
@@ -233,6 +252,7 @@ def storyMain(request, pid, sid):
                         pass
                     current_tag = Tags.objects.get(name=tag)
                     current_tag.story.add(current_story)
+
             elif "saveImageButton" in request.POST:
                 try:
                     image_bytes_data = request.FILES["storyImage_new"].file.read()
@@ -242,9 +262,11 @@ def storyMain(request, pid, sid):
                 # Check image
                 if image_bytes_data:
                     if "image" not in request.FILES["storyImage_new"].content_type:
-                        return error_page(request, 400, "Invalid file type")
+                        return error_page(request, 400, "Invalid file type (image type only)")
+
                 current_story.primary_image = image_bytes_data
                 current_story.save()
+
             elif "deleteButton" in request.POST:
                 current_story.delete()
                 return redirect("project:storyList", pid=current_project.id)
@@ -257,7 +279,7 @@ def storyMain(request, pid, sid):
     # Clear data
     clear_unused_tags()
 
-    # Most updated version
+    # Most updated from database
     current_story = Story.objects.get(id=sid, project=pid)
     current_project = Project.objects.get(id=pid)
 
@@ -267,7 +289,7 @@ def storyMain(request, pid, sid):
     except TypeError:
         current_story.primary_image = None
     
-    # Format handling
+    # Data parsing
     current_story.date = current_story.date.strftime("%Y-%m-%d")
     current_story.content = json.dumps(current_story.content)
     current_story.tag_list = [t.name for t in current_story.tags.all()]

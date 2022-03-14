@@ -3,7 +3,12 @@ from django.shortcuts import render
 from cv.models import CVS
 
 
-def mainFrame(request, name="kai jie"):
+def mainFrame(request):
+    """
+    URL: /main/
+
+    GET: return main page featuring CV, Projects and Contact details
+    """
     try:
         cv_file = CVS.objects.get(active=True)
         cv_active_b64 = base64.b64encode(cv_file.data).decode("utf-8")

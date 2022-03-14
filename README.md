@@ -16,9 +16,7 @@
 
 ## Setting Up
 
-create .env at root folder (Portfolio)
-
-1. cloning repository and create .env file:
+1. Cloning repository and create .env file:
 
    ```shell
    git clone https://github.com/kjc1998/Portfolio.git
@@ -26,7 +24,7 @@ create .env at root folder (Portfolio)
    touch .env
    ```
 
-2. create entry for .env:
+2. Create entry for .env:
 
    ```shell
    USERNAME={USERNAME}
@@ -34,7 +32,7 @@ create .env at root folder (Portfolio)
    EMAIL={EMAIL}
    ```
 
-3. setting up environment and installing dependencies:
+3. Setting up environment and installing dependencies:
 
    ```shell
    pip install virtualenv
@@ -45,14 +43,14 @@ create .env at root folder (Portfolio)
    pip install -r requirement.txt // root directory
    ```
 
-4. running application:
+4. Running application:
 
    ```shell
    source portfolio/bin/activate  // activate environment
    python portfolio/manage.py runserver
    ```
 
-5. setting django superuser:
+5. Setting django superuser:
 
    ```shell
    export $(cat .env | xargs)
@@ -109,3 +107,21 @@ create .env at root folder (Portfolio)
       </td>
   </tr>
 </table>
+
+<br>
+
+## Settings & Development
+
+**Notes:**
+
+_~ Details concerning code development & adjustments to personal preferences_
+
+_~ Changes to UI and In-placed images_
+
+<br>
+
+[Individual Media Changes](https://github.com/kjc1998/Portfolio/tree/master/portfolio/media)
+
+[BackEnd Code Stucture](https://github.com/kjc1998/Portfolio/tree/master/portfolio)
+
+[FrontEnd Code Stucture](https://github.com/kjc1998/Portfolio/tree/master/portfolio/templates)

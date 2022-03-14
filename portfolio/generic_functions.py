@@ -1,4 +1,5 @@
 import requests
+from datetime import datetime
 from typing import List
 from django.shortcuts import render
 from django.core.paginator import Paginator
@@ -26,6 +27,7 @@ def pagination_handling(item_files: List, item_per_page: int, request: requests.
     pages = range(1, paginator.num_pages+1)
     page_num = request.GET.get("page")
     if page_num:
+        # Remove default backslash at the end of URL
         page_num = int(request.GET.get("page").rstrip('/'))
     item_page = paginator.get_page(page_num)
     item_page_list = item_page.object_list
@@ -47,14 +49,31 @@ def get_stories(current_story: Story):
     return prev_story, next_story
 
 def text_area_line_parser(text_string: str):
+    """
+    Text area handling for frontend formatting
+    """
     text_string = text_string.replace("\n", "<br/>")
     text_string = text_string.replace("\r", "<br/>")
     return text_string
 
 
 def clear_unused_tags():
+    """
+    Removed unused tags in any story
+    """
     tags = Tags.objects.all()
     for tag in tags:
         if not tag.story.all():
             tag.delete()
+    return None
+
+def ongoing_project_date_update():
+    """
+    Update ongoing project whenever a request
+    is sent to server
+    """
+    ongoing_projects = Project.objects.filter(ongoing=True).all()
+    for ongoing_project in ongoing_projects:
+        ongoing_project.end_date = datetime.now()
+        ongoing_project.save()
     return None

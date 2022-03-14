@@ -50,7 +50,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'middleware.path_middleware.PathMiddleware',
+    'middleware.generic_middleware.PathMiddleware',
+    'middleware.generic_middleware.DateUpdateMiddleware',
 ]
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'

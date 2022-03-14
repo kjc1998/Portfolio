@@ -19,7 +19,13 @@
                 <td><a href="{% url 'project:storyList' pid=project.id %}">{{ project.name }}</a></td>
                 <td>{{ project.start_date }}</td>
                 {% if project.ongoing == True %}<td></td>{% else %}<td>{{ project.end_date }}</td>{% endif %}
-                <td>{% for tag in project.tag_list %}<li class="tags">{{ tag }}</li>{% endfor %}</td>
+                <td>
+                    {% if project.tag_list|length > 0 %}
+                        {% for tag in project.tag_list %}<li class="tags">{{ tag }}</li>{% endfor %}
+                    {% else %}
+                        <li class="tags">none</li>
+                    {% endif %}
+                </td>
                 <td>{{ project.ongoing }}</td>
                 {% if request.user.is_authenticated %}
                     <td>

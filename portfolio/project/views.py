@@ -90,12 +90,6 @@ def projectList(request):
     # Clear data
     clear_unused_tags()
 
-    # Update Ongoing Project with Time
-    ongoing_projects = Project.objects.filter(ongoing=True).all()
-    for ongoing_project in ongoing_projects:
-        ongoing_project.end_date = datetime.now()
-        ongoing_project.save()
-
     # Pagination
     projects = Project.objects.all().order_by("-start_date")
     projects_page_list, pages = pagination_handling(projects, 5, request)
@@ -110,8 +104,6 @@ def projectList(request):
             tag_list += [t.name for t in story.tags.all()]
         project.tag_list = list(set(tag_list))
 
-        if not project.tag_list:
-            project.tag_list = ["none"]
     return render(request, "project/projectList.html", {
         "projects": projects_page_list,
         "pages": pages,
@@ -186,8 +178,6 @@ def storyList(request, pid):
     for story in story_page_list:
         story.date = story.date.strftime("%Y-%m-%d")
         story.tag_list = [t.name for t in story.tags.all()]
-        if not story.tag_list:
-            story.tag_list = ['none']
 
     return render(request, "project/storyList.html", {
         "project": current_project,

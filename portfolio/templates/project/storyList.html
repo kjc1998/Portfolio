@@ -15,9 +15,11 @@
             <td><a href="{% url 'project:storyMain' pid=project.id sid=story.id %}">{{ story.name }}</a></td>
             <td>{{ story.date }}</td>
             <td>
-                {% for tag in story.tag_list %}
-                    <li class="tags">{{ tag }}</li>
-                {% endfor %}
+                {% if story.tag_list|length > 0 %}
+                    {% for tag in story.tag_list %}<li class="tags">{{ tag }}</li>{% endfor %}
+                {% else %}
+                    <li class="tags">none</li>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}

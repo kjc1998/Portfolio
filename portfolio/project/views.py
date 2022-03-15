@@ -11,7 +11,6 @@ from generic_functions import (
     get_stories,
     text_area_line_parser
 )
-from portfolio.instance import database_instance
 from project.models import Project, Story, Tags
 
 
@@ -38,8 +37,9 @@ def projectList(request):
                 # Check date
                 if start.date() > end.date():
                     return error_page(request, 400, f"Start date cannot be more than End date")
-                
-                edit_project = Project.objects.filter(id=int(project_id)).first()
+
+                edit_project = Project.objects.filter(
+                    id=int(project_id)).first()
                 edit_project.name = name
                 edit_project.start_date = start
                 try:
@@ -52,11 +52,13 @@ def projectList(request):
                 edit_project.save()
 
                 # Auto update stories' dates
-                stories_before = Story.objects.filter(project=project_id, date__lte=edit_project.start_date).all()
+                stories_before = Story.objects.filter(
+                    project=project_id, date__lte=edit_project.start_date).all()
                 for story_before in stories_before:
                     story_before.date = edit_project.start_date
                     story_before.save()
-                stories_after = Story.objects.filter(project=project_id, date__gte=edit_project.end_date).all()
+                stories_after = Story.objects.filter(
+                    project=project_id, date__gte=edit_project.end_date).all()
                 for story_after in stories_after:
                     story_after.date = edit_project.end_date
                     story_after.save()
@@ -78,7 +80,7 @@ def projectList(request):
                     # Check date
                     if start.date() > end.date():
                         return error_page(request, 400, f"Start date cannot be more than End date")
-                        
+
                     try:
                         ongoing = field_entries["projectOngoing_new"]
                         ongoing = True
@@ -94,9 +96,6 @@ def projectList(request):
 
     ### GET METHOD ###
 
-    # Get latest database updates
-    database_instance._run_database_updates()
-
     # Pagination
     projects = Project.objects.all().order_by("-start_date")
     projects_page_list, pages = pagination_handling(projects, 5, request)
@@ -110,7 +109,6 @@ def projectList(request):
             tag_list += [t.name for t in story.tags.all()]
         project.tag_list = list(set(tag_list))
 
-    metadata = database_instance._get_metadata()
     return render(request, "project/projectList.html", {
         "projects": projects_page_list,
         "pages": pages,
@@ -136,11 +134,15 @@ def storyList(request, pid):
             if "storyNew_add" in request.POST:
                 field_entries = request.POST
                 name = str(field_entries["storyName_new"])
-                date = datetime.strptime(field_entries["storyDate_new"], "%Y-%m-%d")
-                tags = [tag.strip() for tag in field_entries["storyTags_final"].split(",")]
-                content = text_area_line_parser(str(field_entries["storyContent_new"]))
+                date = datetime.strptime(
+                    field_entries["storyDate_new"], "%Y-%m-%d")
+                tags = [tag.strip()
+                        for tag in field_entries["storyTags_final"].split(",")]
+                content = text_area_line_parser(
+                    str(field_entries["storyContent_new"]))
                 try:
-                    image_bytes_data = request.FILES["storyImage_new"].file.read()
+                    image_bytes_data = request.FILES["storyImage_new"].file.read(
+                    )
                 except KeyError:
                     image_bytes_data = None
 
@@ -155,7 +157,8 @@ def storyList(request, pid):
 
                 # Add new story
                 try:
-                    new_story_instance = Story(name=name, date=date, content=content, primary_image=image_bytes_data, project=current_project)
+                    new_story_instance = Story(
+                        name=name, date=date, content=content, primary_image=image_bytes_data, project=current_project)
                     new_story_instance.save()
                 except IntegrityError:
                     return error_page(request, 422, "This story name has already been taken")
@@ -177,9 +180,6 @@ def storyList(request, pid):
 
     ### GET METHOD ###
 
-    # Get latest database updates
-    database_instance._run_database_updates()
-
     # Most updated from database
     current_project = Project.objects.get(id=pid)
 
@@ -192,12 +192,12 @@ def storyList(request, pid):
         story.date = story.date.strftime("%Y-%m-%d")
         story.tag_list = [t.name for t in story.tags.all()]
 
-    metadata = database_instance._get_metadata()
     return render(request, "project/storyList.html", {
         "project": current_project,
         "stories": story_page_list,
         "pages": pages,
     })
+
 
 def storyMain(request, pid, sid):
     """
@@ -213,23 +213,25 @@ def storyMain(request, pid, sid):
         current_project = Project.objects.get(id=pid)
     except Story.DoesNotExist:
         return error_page(request, 500, "No such Story")
-    
+
     if request.method == "POST":
         if request.user.is_authenticated:
             if "saveDetailsButton" in request.POST:
                 field_entries = request.POST
                 name = str(field_entries["storyName_edit"])
-                date = datetime.strptime(field_entries["storyDate_edit"], "%Y-%m-%d")
-                tags = [tag.strip() for tag in field_entries["storyTags_final"].split(",")]
-                content = text_area_line_parser(str(field_entries["storyContent_edit"]))
+                date = datetime.strptime(
+                    field_entries["storyDate_edit"], "%Y-%m-%d")
+                tags = [tag.strip()
+                        for tag in field_entries["storyTags_final"].split(",")]
+                content = text_area_line_parser(
+                    str(field_entries["storyContent_edit"]))
 
                 # Check name
                 try:
-                    if Story.objects.get(name=name) and name!=current_story.name:
+                    if Story.objects.get(name=name) and name != current_story.name:
                         return error_page(request, 400, f"This name has already been taken")
                 except Story.DoesNotExist:
                     pass
-                
 
                 # Check date (inclusive)
                 if not (date.date() >= current_project.start_date and date.date() <= current_project.end_date):
@@ -239,7 +241,7 @@ def storyMain(request, pid, sid):
                 current_story.date = date
                 current_story.content = content
                 current_story.save()
-                
+
                 # Tags handling (clear current and append new)
                 current_story = Story.objects.get(name=name)
                 for tag in current_story.tags.all():
@@ -257,10 +259,11 @@ def storyMain(request, pid, sid):
 
             elif "saveImageButton" in request.POST:
                 try:
-                    image_bytes_data = request.FILES["storyImage_new"].file.read()
+                    image_bytes_data = request.FILES["storyImage_new"].file.read(
+                    )
                 except KeyError:
                     image_bytes_data = None
-                
+
                 # Check image
                 if image_bytes_data:
                     if "image" not in request.FILES["storyImage_new"].content_type:
@@ -275,11 +278,7 @@ def storyMain(request, pid, sid):
         else:
             return error_page(request, 403, "Please login to enter this site")
 
-
     ### GET METHOD ###
-
-    # Get latest database updates
-    database_instance._run_database_updates()
 
     # Most updated from database
     current_story = Story.objects.get(id=sid, project=pid)
@@ -287,10 +286,11 @@ def storyMain(request, pid, sid):
 
     # Image handling
     try:
-        current_story.primary_image = base64.b64encode(current_story.primary_image).decode("utf-8")
+        current_story.primary_image = base64.b64encode(
+            current_story.primary_image).decode("utf-8")
     except TypeError:
         current_story.primary_image = None
-    
+
     # Data parsing
     current_story.date = current_story.date.strftime("%Y-%m-%d")
     current_story.content = json.dumps(current_story.content)
@@ -298,9 +298,8 @@ def storyMain(request, pid, sid):
 
     # Stories: next and previous
     prev, next = get_stories(current_story)
-    
-    metadata = database_instance._get_metadata()
-    return render(request, "project/storyMain.html",{
+
+    return render(request, "project/storyMain.html", {
         "project": current_project,
         "story": current_story,
         "previous_story": prev,

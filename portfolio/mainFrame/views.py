@@ -2,8 +2,6 @@ import base64
 from django.shortcuts import render
 from cv.models import CVS
 
-from portfolio.instance import database_instance
-
 
 def mainFrame(request):
     """
@@ -17,10 +15,6 @@ def mainFrame(request):
     except CVS.DoesNotExist:
         cv_active_b64 = None
 
-    # Get latest database updates
-    database_instance._run_database_updates()
-    
-    metadata = database_instance._get_metadata()
     return render(request, "mainFrame/mainFrame.html", {
         "cv_active_b64": cv_active_b64,
     })

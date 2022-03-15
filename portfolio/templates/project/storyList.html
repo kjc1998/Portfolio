@@ -92,7 +92,8 @@
                         var tag_array = tag.split(",").map(element => element.trim());
                         var unique_array = [...new Set(tag_array)];
                         unique_array.forEach(tag=>{
-                            if(!storyTagHandler.tags.includes(tag)){
+                            tag = tag.trim();
+                            if(!storyTagHandler.tags.includes(tag) && tag){
                                 storyTagHandler.tags.push(tag.toLowerCase());
                             }
                         });

@@ -65,7 +65,7 @@
 
 						<label for="sType">Type</label>
 						<select id="sType" name="sType">
-							<option value="all" selected="selected">All</option>
+							<option selected="selected">All</option>
 							<option value="project">Project</option>
 							<option value="story">Story</option>
 						</select>
@@ -82,9 +82,11 @@
 							<option value="descending" selected="selected">Descending</option>
 						</select>
 
-						<label for="sTags">Tags:</label>(Press enter or add a comma after each tag)
+						<label for="sTags">Tags:</label>(Press ENTER to key in tag name)
 						<div id="sTagsHolder"></div>
-						<input type="text" id="sTags" name="sTags" onkeydown="return event.key != 'Enter';">
+						<input type="text" id="sTags" name="sTags" list="sTagsOptions" onkeydown="return event.key != 'Enter';">
+						<datalist id="sTagsOptions"></datalist>
+						<input type="hidden" id="sTags_final" name="sTags_final" value="">
 					</div>
 					<div id="queryResults">
 						<div class="queryTitle"><h2>Projects</h2></div>
@@ -110,28 +112,43 @@
 		<script>
 			var metadata = {{ metadata|safe }};
 
-			let sTagHandler = new TagHandling("sTags", "sTagsHolder");
+			let sTagHandler = new TagHandling("sTags", "sTagsHolder", "sTags_final");
+			let metadata_handler = new MetadataHandling(metadata.projects, metadata.stories, metadata.tags);
+			
+			var full_tag_list = metadata_handler.get_tag_list();
 			sTagHandler.tag_input.addEventListener(
 				"keyup", function(e){
 					if(e.key=="Enter"){
 						var tag = e.target.value.replace(/\s+/g, " ");
-						if(tag.length > 0){
-							var tag_array = tag.split(",").map(element => element.trim());
-							var unique_array = [...new Set(tag_array)];
-							unique_array.forEach(tag=>{
-								if(!sTagHandler.tags.includes(tag)){
-									sTagHandler.tags.push(tag.toLowerCase());
-								}
-							});
-							sTagHandler.displayTag("sTagHandler");
-						};
-						e.target.value = "";
-						if(sTagHandler.hidden_tag){
-							sTagHandler.appendToHiddenTag();
+						tag = tag.trim().toLowerCase();
+						if(tag && full_tag_list.includes(tag)){
+							if(!sTagHandler.tags.includes(tag) && tag){
+								sTagHandler.tags.push(tag);
+								sTagHandler.displayTag("sTagHandler");
+								e.target.value = "";
+								sTagHandler.appendToHiddenTag();
+								metadata_handler.get_filtered_tags("", "sTags_final", "sTagsOptions");
+							}else{
+								alert("This tag has been added");
+							}
+						}else{
+							alert("No Such Tag");
 						}
 					}
 				}
 			);
+
+			// Tags Management Event Listener
+			metadata_handler.get_filtered_tags("", "sTags_final", "sTagsOptions");
+			const inputHandler = function(e){
+				metadata_handler.get_filtered_tags(e.target.value, "sTags_final", "sTagsOptions");
+			}
+			document.getElementById("sTags").addEventListener('input', inputHandler);
+
+			// hidden element change event
+			$('#sTags_final').change(function(){
+				console.log("Filter Function");
+			})
 		</script>
 	</body>
 </html>

@@ -43,14 +43,21 @@
    pip install -r requirement.txt // root directory
    ```
 
-4. Running application:
+4. Setting up database:
+
+   ```shell
+   python portfolio/manage.py makemigrations
+   python portfolio/manage.py migrate
+   ```
+
+5. Running application:
 
    ```shell
    source portfolio/bin/activate  // activate environment
    python portfolio/manage.py runserver
    ```
 
-5. Setting django superuser:
+6. Setting django superuser:
 
    ```shell
    export $(cat .env | xargs)

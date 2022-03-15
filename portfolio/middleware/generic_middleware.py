@@ -30,7 +30,7 @@ class HttpResponseMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
-        # Metadata instance handling
+        # Metadata instance
         self._metadata_instance = MetadataParser()
 
     def __call__(self, request):
@@ -40,8 +40,10 @@ class HttpResponseMiddleware:
 
             ### Extra Data to be parsed in to template ###
 
+            # Metadata handling
             if self._metadata_instance._is_database_modified():
-                self._metadata_instance._get_metadata()
+                self._metadata_instance._metadata = self._metadata_instance._get_metadata()
 
+            data["metadata"] = self._metadata_instance._metadata
             return render(req, template, data)
         return response

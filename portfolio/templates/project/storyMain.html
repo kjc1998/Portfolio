@@ -55,9 +55,6 @@
                         <tr>
                             <td>Tags:<br>(Press enter or add a comma after each tag)</td>
                             <td id="tagsColumn">
-                                {% for tag in story.tag_list %}
-                                    <li class="tags">{{ tag }}<i class="uit uit-multiply" onclick="removeTag(this, '{{ tag }}')"></i></li>
-                                {% endfor %}
                                 <input type="text" id="storyTags_edit" name="storyTags_edit" onkeydown="return event.key != 'Enter';">
                                 <input type="hidden" id="storyTags_final" name="storyTags_final" value="">
                             </td>
@@ -124,57 +121,33 @@
             }
         }
 
-        // Tags handling
-        tag_input = document.getElementById("storyTags_edit");
-        let tags = {{ story.tag_list|safe }};
-        
-        function appendToHiddenTag(){
-            hidden_tag = document.getElementById("storyTags_final")
-            hidden_tag.value = ""; // reset to default before readjust
-            for(i=0;i<tags.length;++i){
-                hidden_tag.value += `,${tags[i]}`;
+        // Tag Handling
+        let storyTagHandler = new TagHandling("storyTags_edit", "tagsColumn", "storyTags_final", {{ story.tag_list|safe }});
+        storyTagHandler.appendToHiddenTag();
+        storyTagHandler.displayTag("storyTagHandler");
+
+        storyTagHandler.tag_input.addEventListener("keyup", function(e){
+                if(e.key=="Enter"){
+                    var tag = e.target.value.replace(/\s+/g, " ");
+                    if(tag.length > 0){
+                        var tag_array = tag.split(",").map(element => element.trim());
+                        var unique_array = [...new Set(tag_array)];
+                        unique_array.forEach(tag=>{
+                            if(!storyTagHandler.tags.includes(tag)){
+                                storyTagHandler.tags.push(tag.toLowerCase());
+                            }
+                        });
+                        storyTagHandler.displayTag("storyTagHandler");
+                    };
+                    e.target.value = "";
+                    storyTagHandler.appendToHiddenTag();
+                }
             }
-            hidden_tag.value = hidden_tag.value.substring(1);
-        }
-
-        function displayTag(){
-            $("#tagsColumn li").remove(); // remove all li before appending
-            tags.slice().reverse().forEach(tag=>{
-                let liTag = `<li class="tags">${tag} <i class="uit uit-multiply" onclick="removeTag(this, '${tag}')"></i></li>`;
-                document.getElementById("tagsColumn").insertAdjacentHTML("afterbegin", liTag);
-            })
-        }
-
-        function removeTag(element, tag){
-            let index = tags.indexOf(tag);
-            tags = [...tags.slice(0, index), ...tags.slice(index + 1)];
-            displayTag();
-            appendToHiddenTag();
-        }
-
-        function addTag(e){
-            if(e.key=="Enter"){
-                let tag = e.target.value.replace(/\s+/g, " ");
-                if(tag.length > 0){
-                    let tag_array = tag.split(",").map(element => element.trim());
-                    let unique_array = [...new Set(tag_array)];
-                    unique_array.forEach(tag=>{
-                        if(!tags.includes(tag)){
-                            tags.push(tag.toLowerCase());
-                        }
-                    });
-                    displayTag();
-                };
-                e.target.value = ""; // clear input field
-                appendToHiddenTag();
-            }
-        };
-        tag_input.addEventListener("keyup", addTag);
+        );
 
         // Image handling
 
         // To be run when page loaded
         textAreaHandling();
-        appendToHiddenTag();
     </script>
 {% endblock %}

@@ -15,6 +15,10 @@
 		
 		<!-- Additional -->
 		<link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/thinline.css">
+
+		<!-- JQuery Referencing -->
+		<script src="{% static 'js/jquery.min.js' %}"></script>
+		<script src="{% static 'js/jquery.poptrox.min.js' %}"></script>
 		
 		<!-- User Defined js -->
 		<script src="{% static 'js/generic.js' %}"></script>
@@ -78,10 +82,9 @@
 							<option value="descending" selected="selected">Descending</option>
 						</select>
 
-						<label for="sTags">Tags (Hold ctrl button to select multiple):</label>
-						<select id="sTags" name="sTags" size="6" multiple>
-							<option value="all" selected="selected">All</option>
-						</select>
+						<label for="sTags">Tags:</label>(Press enter or add a comma after each tag)
+						<div id="sTagsHolder"></div>
+						<input type="text" id="sTags" name="sTags" onkeydown="return event.key != 'Enter';">
 					</div>
 					<div id="queryResults">
 						<div class="queryTitle"><h2>Projects</h2></div>
@@ -98,8 +101,6 @@
 		</div>
 
 		<!-- Scripts -->
-		<script src="{% static 'js/jquery.min.js' %}"></script>
-		<script src="{% static 'js/jquery.poptrox.min.js' %}"></script>
 		<script src="{% static 'js/browser.min.js' %}"></script>
 		<script src="{% static 'js/breakpoints.min.js' %}"></script>
 		<script src="{% static 'js/util.js' %}"></script>
@@ -108,16 +109,29 @@
 		<!-- SearchBar Handling -->
 		<script>
 			var metadata = {{ metadata|safe }};
-			function insertTags(){
-				tag_element = document.getElementById("sTags");
-				for(i=0;i < metadata["tags"].length;i++){
-					var opt = document.createElement("option");
-					opt.value = metadata["tags"][i].name;
-					opt.innerHTML  = metadata["tags"][i].name
-					tag_element.appendChild(opt);
+
+			let sTagHandler = new TagHandling("sTags", "sTagsHolder");
+			sTagHandler.tag_input.addEventListener(
+				"keyup", function(e){
+					if(e.key=="Enter"){
+						var tag = e.target.value.replace(/\s+/g, " ");
+						if(tag.length > 0){
+							var tag_array = tag.split(",").map(element => element.trim());
+							var unique_array = [...new Set(tag_array)];
+							unique_array.forEach(tag=>{
+								if(!sTagHandler.tags.includes(tag)){
+									sTagHandler.tags.push(tag.toLowerCase());
+								}
+							});
+							sTagHandler.displayTag("sTagHandler");
+						};
+						e.target.value = "";
+						if(sTagHandler.hidden_tag){
+							sTagHandler.appendToHiddenTag();
+						}
+					}
 				}
-			}
-			insertTags();
+			);
 		</script>
 	</body>
 </html>

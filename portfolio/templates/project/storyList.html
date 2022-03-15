@@ -83,51 +83,25 @@
         });
         document.getElementById("storyDate_new").value = new Date().toDateInputValue();
 
-        tag_input = document.getElementById("storyTags_new");
-        let tags = [];
-        function appendToHiddenTag(){
-            hidden_tag = document.getElementById("storyTags_final")
-            hidden_tag.value = ""; // reset to default before readjust
-            for(i=0;i<tags.length;++i){
-                hidden_tag.value += `,${tags[i]}`;
+        // Tag Handling
+        let storyTagHandler = new TagHandling("storyTags_new", "tagsColumn", "storyTags_final");
+        storyTagHandler.tag_input.addEventListener("keyup", function(e){
+                if(e.key=="Enter"){
+                    var tag = e.target.value.replace(/\s+/g, " ");
+                    if(tag.length > 0){
+                        var tag_array = tag.split(",").map(element => element.trim());
+                        var unique_array = [...new Set(tag_array)];
+                        unique_array.forEach(tag=>{
+                            if(!storyTagHandler.tags.includes(tag)){
+                                storyTagHandler.tags.push(tag.toLowerCase());
+                            }
+                        });
+                        storyTagHandler.displayTag("storyTagHandler");
+                    };
+                    e.target.value = "";
+                    storyTagHandler.appendToHiddenTag();
+                }
             }
-            hidden_tag.value = hidden_tag.value.substring(1);
-            console.log(hidden_tag.value);
-        }
-
-        function displayTag(){
-            $("#tagsColumn li").remove(); // remove all li before appending
-            tags.slice().reverse().forEach(tag=>{
-                let liTag = `<li class="tags">${tag} <i class="uit uit-multiply" onclick="removeTag(this, '${tag}')"></i></li>`;
-                document.getElementById("tagsColumn").insertAdjacentHTML("afterbegin", liTag);
-            })
-        }
-
-        function removeTag(element, tag){
-            let index = tags.indexOf(tag);
-            tags = [...tags.slice(0, index), ...tags.slice(index + 1)];
-            displayTag();
-            appendToHiddenTag();
-        }
-
-        function addTag(e){
-            if(e.key=="Enter"){
-                let tag = e.target.value.replace(/\s+/g, " ");
-                if(tag.length > 0){
-                    let tag_array = tag.split(",").map(element => element.trim());
-                    let unique_array = [...new Set(tag_array)];
-                    unique_array.forEach(tag=>{
-                        if(!tags.includes(tag)){
-                            tags.push(tag.toLowerCase());
-                        }
-                    });
-                    displayTag();
-                };
-                e.target.value = ""; // clear input field
-                appendToHiddenTag();
-            }
-        };
-
-        tag_input.addEventListener("keyup", addTag);
+        );
     </script>
 {% endblock %}

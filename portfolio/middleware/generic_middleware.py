@@ -1,5 +1,5 @@
 from django.shortcuts import redirect
-from generic_functions import ongoing_project_date_update
+from generic_functions import ongoing_project_date_update, clear_unused_tags
 
 class PathMiddleware:
     """
@@ -15,14 +15,17 @@ class PathMiddleware:
             return redirect(url + '/')
         return response
 
-class DateUpdateMiddleware:
+class DatabaseUpdateMiddleware:
     """
-    Middleware to update project dates
+    Middleware to update database values
     """
     def __init__(self, get_response):
         self.get_response = get_response
     
     def __call__(self, request):
         response = self.get_response(request)
+        # Making sure all project are up to dates
         ongoing_project_date_update()
+        # Removing unused tags
+        clear_unused_tags()
         return response

@@ -126,3 +126,22 @@ if(performance.navigation.type == 2){
 if ( window.history.replaceState ) {
 	window.history.replaceState( null, null, window.location.href );
 }
+
+// Modal Handling
+
+function openSearch() {
+	var modal = document.getElementById("search");
+	var overlay = document.getElementById("overlay");
+	var main = document.getElementById("main");
+
+	modal.classList.add("active");
+	overlay.classList.add("active");
+	main.classList.add("avoid-clicks");
+};
+
+function closeSearch() {
+	var modal = document.getElementById("search");
+	modal.classList.remove('active');
+	overlay.classList.remove("active");
+	main.classList.remove('avoid-clicks');
+};

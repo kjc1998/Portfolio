@@ -40,3 +40,83 @@
 #navBar .active {
   background-color: #04aa6d;
 }
+
+#navBarLeft {
+  float: left;
+}
+
+#navBarRight {
+  float: right;
+  align-items: center;
+}
+
+/* Search Bar Handling */
+
+#searchIcon {
+  height: 55px;
+  transition: transform 0.3s;
+}
+
+#searchIcon:hover {
+  transform: translateY(8px) translateX(-8px) scale(1.25);
+}
+
+#search {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  transition: 200ms ease-in-out;
+  border: 1px solid black;
+  border-radius: 10px;
+  z-index: 10;
+  background-color: white;
+  width: 40vw;
+  max-width: 80%;
+}
+
+#search.active {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.search-header {
+  padding: 10px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.search-header .title {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.search-header .close-button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: none;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.search-body {
+  padding: 10px 15px 20vh;
+}
+
+#overlay {
+  position: fixed;
+  opacity: 0;
+  transition: 200ms ease-in-out;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+#overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}

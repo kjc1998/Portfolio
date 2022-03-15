@@ -10,7 +10,6 @@ from generic_functions import (
     pagination_handling,
     get_stories,
     text_area_line_parser,
-    clear_unused_tags,
 )
 from project.models import Project, Story, Tags
 
@@ -94,9 +93,6 @@ def projectList(request):
 
     ### GET METHOD ###
 
-    # Clear data
-    clear_unused_tags()
-
     # Pagination
     projects = Project.objects.all().order_by("-start_date")
     projects_page_list, pages = pagination_handling(projects, 5, request)
@@ -175,9 +171,6 @@ def storyList(request, pid):
             return error_page(request, 403, "Please login to enter this site")
 
     ### GET METHOD ###
-
-    # Clear data
-    clear_unused_tags()
 
     # Most updated from database
     current_project = Project.objects.get(id=pid)
@@ -275,9 +268,6 @@ def storyMain(request, pid, sid):
 
 
     ### GET METHOD ###
-
-    # Clear data
-    clear_unused_tags()
 
     # Most updated from database
     current_story = Story.objects.get(id=sid, project=pid)

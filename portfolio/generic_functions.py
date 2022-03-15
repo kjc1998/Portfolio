@@ -61,10 +61,9 @@ def clear_unused_tags():
     """
     Removed unused tags in any story
     """
-    tags = Tags.objects.all()
+    tags = Tags.objects.filter(story__isnull=True).all()
     for tag in tags:
-        if not tag.story.all():
-            tag.delete()
+        tag.delete()
     return None
 
 def ongoing_project_date_update():

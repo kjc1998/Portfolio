@@ -21,16 +21,21 @@
 	<body class="is-preload">
 		<div id="navBar">
 			<ul>
-				<li><a href="{% url 'mainFrame:mainFrame' %}">Home</a></li>
-				<li><a href="{% url 'project:projectList' %}">Project</a></li>
-				{% if request.user.is_authenticated %}
-					<li><a href="{% url 'cv:cvManagement' %}">CV</a></li>
-				{% endif %}
-				{% if request.user.is_authenticated %}
-					<li><a href="{% url 'logout' %}">Logout</a></li>
-				{% else %}
-					<li><a href="{% url 'login' %}">Login</a></li>
-				{% endif %}
+				<div id="navBarLeft">
+					<li><a href="{% url 'mainFrame:mainFrame' %}">Home</a></li>
+					<li><a href="{% url 'project:projectList' %}">Project</a></li>
+					{% if request.user.is_authenticated %}
+						<li><a href="{% url 'cv:cvManagement' %}">CV</a></li>
+					{% endif %}
+					{% if request.user.is_authenticated %}
+						<li><a href="{% url 'logout' %}">Logout</a></li>
+					{% else %}
+						<li><a href="{% url 'login' %}">Login</a></li>
+					{% endif %}
+				</div>
+				<div id="navBarRight">
+					<img id="searchIcon" onclick="openSearch()" src="{{ MEDIA_URl }}/general/magnifyingGlass.jpeg">
+				</div>
 			  </ul>
 		</div>
 		<header id="header">
@@ -40,6 +45,20 @@
 				{% block sidebar %}{% endblock %}
 			</div>
 		</header>
+
+		<!-- Modal Handling -->
+		<div id="searchDiv">
+			<div id="search">
+				<div class="search-header">
+					<div>Search Bar</div>
+					<button data-close-button class="close-button" onclick="closeSearch()">&times;</button>
+				</div>
+				<div class="search-body">
+					{ KEYWORD | CATEGORY | START | END | ORDER | TAG  }
+				</div>
+			</div>
+			<div id="overlay"></div>
+		</div>
 
 		<div id="main">
 			{% block content %}{% endblock %}

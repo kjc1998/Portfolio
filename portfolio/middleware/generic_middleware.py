@@ -1,5 +1,6 @@
 from django.shortcuts import redirect
-from generic_functions import ongoing_project_date_update, clear_unused_tags
+
+from project.models import Project, Story, Tags
 
 class PathMiddleware:
     """
@@ -23,17 +24,35 @@ class DatabaseUpdateMiddleware:
     """
     def __init__(self, get_response):
         self.get_response = get_response
+        self._projects, self._stories, self._tags = self._get_database_values()
     
     def __call__(self, request):
-        # User Defined Code #
-
-        # Metadata handling
-        if not hasattr(request, "context"):
-            request.context = {}
-        # Making sure all project are up to dates
-        ongoing_project_date_update()
-        # Removing unused tags
-        clear_unused_tags()
+        ### Request Stage ###
 
         response = self.get_response(request)
+
+        ### Response Stage ###
+
+        # Check updates
+        updates = self._check_database_update()
+        response.metadata = "metadata"
+        print(response)
+
         return response
+    
+    def _get_database_values(self):
+        projects = list(Project.objects.all().values())
+        stories = list(Story.objects.all().values())
+        tags = list(Tags.objects.all().values())
+        return projects, stories, tags
+
+    
+    def _check_database_update(self):
+        projects, stories, tags = self._get_database_values()
+        if projects == self._projects and stories == self._stories and tags == self._tags:
+            return False
+        else:
+            self._projects = projects
+            self._stories = stories
+            self._tags = tags
+            return True

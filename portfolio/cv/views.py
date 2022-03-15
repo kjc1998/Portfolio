@@ -4,7 +4,7 @@ import datetime
 from django.shortcuts import render
 from django.db.utils import IntegrityError
 
-from generic_functions import error_page, pagination_handling
+from generic_functions import error_page, pagination_handling, updates_after
 from cv.models import CVS
 
 
@@ -68,6 +68,9 @@ def cvManagement(request):
                         next_active.save()
     
     ### GET METHOD ###
+    
+    # Get latest database updates
+    updates_after()
 
     cv_active = CVS.objects.filter(active=True).first()
 

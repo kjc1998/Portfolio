@@ -56,25 +56,29 @@ def text_area_line_parser(text_string: str):
     text_string = text_string.replace("\r", "<br/>")
     return text_string
 
+def updates_after():
+    def clear_unused_tags():
+        """
+        Removed unused tags in any story
+        """
+        tags = Tags.objects.filter(story__isnull=True).all()
+        for tag in tags:
+            tag.delete()
+        return None
 
-def clear_unused_tags():
-    """
-    Removed unused tags in any story
-    """
-    tags = Tags.objects.filter(story__isnull=True).all()
-    for tag in tags:
-        tag.delete()
-    return None
+    def ongoing_project_date_update():
+        """
+        Update ongoing project whenever a request
+        is sent to server
+        """
+        ongoing_projects = Project.objects.filter(ongoing=True).all()
+        for ongoing_project in ongoing_projects:
+            ongoing_project.end_date = datetime.now()
+            ongoing_project.save()
+        return None
 
-def ongoing_project_date_update():
-    """
-    Update ongoing project whenever a request
-    is sent to server
-    """
-    ongoing_projects = Project.objects.filter(ongoing=True).all()
-    for ongoing_project in ongoing_projects:
-        ongoing_project.end_date = datetime.now()
-        ongoing_project.save()
+    clear_unused_tags()
+    ongoing_project_date_update()
     return None
 
 def project_metadata():

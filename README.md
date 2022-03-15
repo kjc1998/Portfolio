@@ -27,9 +27,9 @@
 2. Create entry for .env:
 
    ```shell
-   USERNAME={USERNAME}
-   PASSWORD={PASSWORD}
-   EMAIL={EMAIL}
+   DJANGO_SUPERUSER_USERNAME={USERNAME}
+   DJANGO_SUPERUSER_PASSWORD={PASSWORD}
+   DJANGO_SUPERUSER_EMAIL={EMAIL}
    ```
 
 3. Setting up environment and installing dependencies:

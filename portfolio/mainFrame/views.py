@@ -1,6 +1,7 @@
 import base64
-from django.shortcuts import render
 from cv.models import CVS
+
+from generic_functions import database_updates
 
 
 def mainFrame(request):
@@ -15,6 +16,13 @@ def mainFrame(request):
     except CVS.DoesNotExist:
         cv_active_b64 = None
 
-    return render(request, "mainFrame/mainFrame.html", {
-        "cv_active_b64": cv_active_b64,
-    })
+    ### GET METHOD ###
+    database_updates()
+
+    return {
+        "request": request,
+        "template": "mainFrame/mainFrame.html",
+        "data": {
+            "cv_active_b64": cv_active_b64
+        }
+    }

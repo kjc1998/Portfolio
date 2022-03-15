@@ -51,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'middleware.generic_middleware.PathMiddleware',
+    'middleware.generic_middleware.HttpResponseMiddleware',
 ]
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'

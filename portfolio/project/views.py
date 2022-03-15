@@ -1,7 +1,7 @@
 import json
 import base64
 from datetime import datetime
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.db.utils import IntegrityError
 from django.utils.datastructures import MultiValueDictKeyError
 
@@ -9,7 +9,8 @@ from generic_functions import (
     error_page,
     pagination_handling,
     get_stories,
-    text_area_line_parser
+    text_area_line_parser,
+    database_updates,
 )
 from project.models import Project, Story, Tags
 
@@ -95,6 +96,7 @@ def projectList(request):
             return error_page(request, 403, "Please login to enter this site")
 
     ### GET METHOD ###
+    database_updates()
 
     # Pagination
     projects = Project.objects.all().order_by("-start_date")
@@ -109,10 +111,14 @@ def projectList(request):
             tag_list += [t.name for t in story.tags.all()]
         project.tag_list = list(set(tag_list))
 
-    return render(request, "project/projectList.html", {
-        "projects": projects_page_list,
-        "pages": pages,
-    })
+    return {
+        "request": request,
+        "template": "project/projectList.html",
+        "data": {
+            "projects": projects_page_list,
+            "pages": pages,
+        }
+    }
 
 
 def storyList(request, pid):
@@ -179,6 +185,7 @@ def storyList(request, pid):
             return error_page(request, 403, "Please login to enter this site")
 
     ### GET METHOD ###
+    database_updates()
 
     # Most updated from database
     current_project = Project.objects.get(id=pid)
@@ -192,11 +199,15 @@ def storyList(request, pid):
         story.date = story.date.strftime("%Y-%m-%d")
         story.tag_list = [t.name for t in story.tags.all()]
 
-    return render(request, "project/storyList.html", {
-        "project": current_project,
-        "stories": story_page_list,
-        "pages": pages,
-    })
+    return {
+        "request": request,
+        "template": "project/storyList.html",
+        "data": {
+            "project": current_project,
+            "stories": story_page_list,
+            "pages": pages,
+        }
+    }
 
 
 def storyMain(request, pid, sid):
@@ -279,6 +290,7 @@ def storyMain(request, pid, sid):
             return error_page(request, 403, "Please login to enter this site")
 
     ### GET METHOD ###
+    database_updates()
 
     # Most updated from database
     current_story = Story.objects.get(id=sid, project=pid)
@@ -299,9 +311,13 @@ def storyMain(request, pid, sid):
     # Stories: next and previous
     prev, next = get_stories(current_story)
 
-    return render(request, "project/storyMain.html", {
-        "project": current_project,
-        "story": current_story,
-        "previous_story": prev,
-        "next_story": next
-    })
+    return {
+        "request": request,
+        "template": "project/storyMain.html",
+        "data": {
+            "project": current_project,
+            "story": current_story,
+            "previous_story": prev,
+            "next_story": next
+        }
+    }

@@ -11,6 +11,7 @@
 		<link rel="stylesheet" href="{% static 'css/navBar.css' %}">
 		<link rel="stylesheet" href="{% static 'css/project.css' %}">
 		<link rel="stylesheet" href="{% static 'css/error.css' %}">
+		<link rel="stylesheet" href="{% static 'css/searchBar.css' %}">
 		
 		<!-- Additional -->
 		<link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/thinline.css">
@@ -50,11 +51,42 @@
 		<div id="searchDiv">
 			<div id="search">
 				<div class="search-header">
-					<div>Search Bar</div>
+					<div><h1>Search Bar</h1></div>
 					<button data-close-button class="close-button" onclick="closeSearch()">&times;</button>
 				</div>
 				<div class="search-body">
-					{ KEYWORD | CATEGORY | START | END | ORDER | TAG  }
+					<div id="searchQuery">
+						<label for="sKeywords">Keywords:</label>
+						<input type="search" id="sKeywords" name="sKeywords" placeholder="Keywords">
+
+						<label for="sType">Type</label>
+						<select id="sType" name="sType">
+							<option value="all" selected="selected">All</option>
+							<option value="project">Project</option>
+							<option value="story">Story</option>
+						</select>
+
+						<label for="sStartDate">Date Range (Start):</label>
+						<input type="date" id="sStartDate" name="sStartDate">
+
+						<label for="sEndDate">Date Range (End):</label>
+						<input type="date" id="sEndDate" name="sEndDate">
+
+						<label for="sOrder">Date Order</label>
+						<select id="sOrder" name="sOrder">
+							<option value="ascending">Ascending</option>
+							<option value="descending" selected="selected">Descending</option>
+						</select>
+
+						<label for="sTags">Tags (Hold ctrl button to select multiple):</label>
+						<select id="sTags" name="sTags" size="6" multiple>
+							<option value="all" selected="selected">All</option>
+						</select>
+					</div>
+					<div id="queryResults">
+						<div class="queryTitle"><h2>Projects</h2></div>
+						<div class="queryTitle"><h2>Stories</h2></div>
+					</div>
 				</div>
 			</div>
 			<div id="overlay"></div>
@@ -76,6 +108,16 @@
 		<!-- SearchBar Handling -->
 		<script>
 			var metadata = {{ metadata|safe }};
+			function insertTags(){
+				tag_element = document.getElementById("sTags");
+				for(i=0;i < metadata["tags"].length;i++){
+					var opt = document.createElement("option");
+					opt.value = metadata["tags"][i].name;
+					opt.innerHTML  = metadata["tags"][i].name
+					tag_element.appendChild(opt);
+				}
+			}
+			insertTags();
 		</script>
 	</body>
 </html>

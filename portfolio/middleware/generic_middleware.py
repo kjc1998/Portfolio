@@ -54,8 +54,8 @@ class HttpResponseMiddleware:
                 del project["id"]
             for story in metadata["stories"]:
                 story["url"] = base_url + \
-                    f"/project/{str(story['project_id'])}/{str(story['id'])}/"
-                del story["project_id"]
+                    f"/project/{str(story['project'])}/{str(story['id'])}/"
+                del story["project"]
                 del story["id"]
 
             data["metadata"] = metadata

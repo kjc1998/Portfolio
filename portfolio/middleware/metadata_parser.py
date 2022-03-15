@@ -1,7 +1,6 @@
 from typing import Dict, List
-from datetime import datetime
-
 from project.models import Project, Story, Tags
+from django.forms.models import model_to_dict
 
 
 class MetadataParser:
@@ -13,8 +12,28 @@ class MetadataParser:
         """
         Return list objects of projects' data
         """
-        projects = list(Project.objects.all().values())
-        stories = list(Story.objects.all().values())
+        # Tags handling
+        project_tag_dict = {}
+        stories = []
+        for story in Story.objects.all():
+            story_dict = model_to_dict(story)
+            story_dict["tags"] = []
+            for t in story.tags.all():
+                story_dict["tags"].append(t.name)
+                project_tag_dict.setdefault(story.project.id, [])
+                if t.name not in project_tag_dict[story.project.id]:
+                    project_tag_dict[story.project.id].append(t.name)
+            stories.append(story_dict)
+
+        projects = []
+        for project in Project.objects.all():
+            project_dict = model_to_dict(project)
+            try:
+                project_dict["tags"] = project_tag_dict[project.id]
+            except KeyError:
+                project_dict["tags"] = []
+            projects.append(project_dict)
+
         tags = list(Tags.objects.all().values())
         return projects, stories, tags
 
@@ -49,7 +68,6 @@ class MetadataParser:
         story_list = []
         for story in self._stories:
             story = story.copy()
-            del story["primary_image"]
             story["date"] = story["date"].strftime("%Y-%m-%d")
             story_list.append(story)
 

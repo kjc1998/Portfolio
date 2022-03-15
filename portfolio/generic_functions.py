@@ -76,3 +76,10 @@ def ongoing_project_date_update():
         ongoing_project.end_date = datetime.now()
         ongoing_project.save()
     return None
+
+def project_metadata():
+    """
+    Return a jsonify object consisting of all relevant informations
+    regarding all recorded projects and stories
+    """
+    return None

@@ -9,10 +9,12 @@ class PathMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        response = self.get_response(request)
+        # User Defined Code #
+
         url = str(request.build_absolute_uri())
         if url[-1] != '/':
             return redirect(url + '/')
+        response = self.get_response(request)
         return response
 
 class DatabaseUpdateMiddleware:
@@ -23,9 +25,15 @@ class DatabaseUpdateMiddleware:
         self.get_response = get_response
     
     def __call__(self, request):
-        response = self.get_response(request)
+        # User Defined Code #
+
+        # Metadata handling
+        if not hasattr(request, "context"):
+            request.context = {}
         # Making sure all project are up to dates
         ongoing_project_date_update()
         # Removing unused tags
         clear_unused_tags()
+
+        response = self.get_response(request)
         return response

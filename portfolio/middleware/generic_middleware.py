@@ -1,6 +1,9 @@
+import copy
+from typing import Dict
+from urllib.parse import urlparse
+
 from django.shortcuts import redirect
 from django.shortcuts import render
-from typing import Dict
 
 from middleware.metadata_parser import MetadataParser
 
@@ -34,6 +37,7 @@ class HttpResponseMiddleware:
         self._metadata_instance = MetadataParser()
 
     def __call__(self, request):
+        base_url = f"http://{urlparse(request.build_absolute_uri()).netloc}"
         response = self.get_response(request)
         if isinstance(response, Dict):
             req, template, data = response["request"], response["template"], response["data"]
@@ -43,7 +47,17 @@ class HttpResponseMiddleware:
             # Metadata handling
             if self._metadata_instance._is_database_modified():
                 self._metadata_instance._metadata = self._metadata_instance._get_metadata()
+            metadata = copy.deepcopy(self._metadata_instance._metadata)
 
-            data["metadata"] = self._metadata_instance._metadata
+            for project in metadata["projects"]:
+                project["url"] = base_url + f"/project/{str(project['id'])}/"
+                del project["id"]
+            for story in metadata["stories"]:
+                story["url"] = base_url + \
+                    f"/project/{str(story['project_id'])}/{str(story['id'])}/"
+                del story["project_id"]
+                del story["id"]
+
+            data["metadata"] = metadata
             return render(req, template, data)
         return response

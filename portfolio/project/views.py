@@ -9,9 +9,9 @@ from generic_functions import (
     error_page,
     pagination_handling,
     get_stories,
-    text_area_line_parser,
-    updates_after,
+    text_area_line_parser
 )
+from portfolio.instance import database_instance
 from project.models import Project, Story, Tags
 
 
@@ -95,7 +95,7 @@ def projectList(request):
     ### GET METHOD ###
 
     # Get latest database updates
-    updates_after()
+    database_instance._run_database_updates()
 
     # Pagination
     projects = Project.objects.all().order_by("-start_date")
@@ -110,6 +110,7 @@ def projectList(request):
             tag_list += [t.name for t in story.tags.all()]
         project.tag_list = list(set(tag_list))
 
+    metadata = database_instance._get_metadata()
     return render(request, "project/projectList.html", {
         "projects": projects_page_list,
         "pages": pages,
@@ -177,7 +178,7 @@ def storyList(request, pid):
     ### GET METHOD ###
 
     # Get latest database updates
-    updates_after()
+    database_instance._run_database_updates()
 
     # Most updated from database
     current_project = Project.objects.get(id=pid)
@@ -191,6 +192,7 @@ def storyList(request, pid):
         story.date = story.date.strftime("%Y-%m-%d")
         story.tag_list = [t.name for t in story.tags.all()]
 
+    metadata = database_instance._get_metadata()
     return render(request, "project/storyList.html", {
         "project": current_project,
         "stories": story_page_list,
@@ -277,7 +279,7 @@ def storyMain(request, pid, sid):
     ### GET METHOD ###
 
     # Get latest database updates
-    updates_after()
+    database_instance._run_database_updates()
 
     # Most updated from database
     current_story = Story.objects.get(id=sid, project=pid)
@@ -296,6 +298,8 @@ def storyMain(request, pid, sid):
 
     # Stories: next and previous
     prev, next = get_stories(current_story)
+    
+    metadata = database_instance._get_metadata()
     return render(request, "project/storyMain.html",{
         "project": current_project,
         "story": current_story,

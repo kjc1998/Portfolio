@@ -4,7 +4,8 @@ import datetime
 from django.shortcuts import render
 from django.db.utils import IntegrityError
 
-from generic_functions import error_page, pagination_handling, updates_after
+from portfolio.instance import database_instance
+from generic_functions import error_page, pagination_handling
 from cv.models import CVS
 
 
@@ -70,7 +71,7 @@ def cvManagement(request):
     ### GET METHOD ###
     
     # Get latest database updates
-    updates_after()
+    database_instance._run_database_updates()
 
     cv_active = CVS.objects.filter(active=True).first()
 
@@ -89,6 +90,7 @@ def cvManagement(request):
         dic_of_cvs[cv_file.id] = [cv_file.name, cv_file.date.strftime("%Y-%m-%d"), base64.b64encode(
             cv_file.data).decode("utf-8"), cv_file.active]
 
+    metadata = database_instance._get_metadata()
     return render(request, "cv/cvManagement.html", {
         "pages": pages,
         "cv_files": json.dumps(dic_of_cvs) if dic_of_cvs else None,

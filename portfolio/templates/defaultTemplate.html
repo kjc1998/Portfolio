@@ -130,6 +130,10 @@
 				var tags = JSON.stringify(String(document.getElementById("sTags_final").value).split(","));
 
 				var updated_list = metadata_handler.getKeyUpdates(keywords, start, end, order, tags);
+				metadata_handler.update_results(updated_list);
+
+				var project_list = metadata_handler.project_match;
+				var story_list = metadata_handler.story_match;
 			};
 			$("#sKeywords_final").change(metadataFilter);
 			$("#sTags_final").change(metadataFilter);

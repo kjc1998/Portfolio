@@ -25,4 +25,8 @@ class MetadataHandling{
 		}
         return answer;
 	}
+
+	get_filtered_results(){
+		
+	}
 }

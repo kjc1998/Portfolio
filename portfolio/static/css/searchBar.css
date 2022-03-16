@@ -21,6 +21,7 @@
   background-color: white;
   width: 60vw;
   max-width: 80%;
+  height: 80vh;
 }
 
 #search.active {
@@ -90,9 +91,10 @@
 .queryTitle {
   margin: auto;
   width: 80%;
-  border-bottom: 2px solid grey;
+  height: 50%;
   text-align: center;
 }
 .queryTitle > h2 {
   margin: 0;
+  border-bottom: 2px solid grey;
 }

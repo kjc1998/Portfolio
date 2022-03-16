@@ -62,23 +62,17 @@
 				<div class="search-body">
 					<div id="searchQuery">
 						<label for="sKeywords">Keywords:</label>
-						<input type="search" id="sKeywords" name="sKeywords" placeholder="Keywords">
-
-						<label for="sType">Type</label>
-						<select id="sType" name="sType">
-							<option selected="selected">All</option>
-							<option value="project">Project</option>
-							<option value="story">Story</option>
-						</select>
+						<input type="search" id="sKeywords" name="sKeywords" placeholder="Keywords" onkeyup="keywordParser(this)">
+						<input type="hidden" id="sKeywords_final" name="sKeywords_final" value="">
 
 						<label for="sStartDate">Date Range (Start):</label>
-						<input type="date" id="sStartDate" name="sStartDate">
+						<input type="date" id="sStartDate" name="sStartDate" onchange="metadataFilter()" >
 
 						<label for="sEndDate">Date Range (End):</label>
-						<input type="date" id="sEndDate" name="sEndDate">
+						<input type="date" id="sEndDate" name="sEndDate" onchange="metadataFilter()">
 
 						<label for="sOrder">Date Order</label>
-						<select id="sOrder" name="sOrder">
+						<select id="sOrder" name="sOrder" onchange="metadataFilter()">
 							<option value="ascending">Ascending</option>
 							<option value="descending" selected="selected">Descending</option>
 						</select>
@@ -89,12 +83,11 @@
 
 						<input type="text" id="sTags" name="sTags" list="sTagsOptions" onkeydown="return event.key != 'Enter';">
 						<datalist id="sTagsOptions"></datalist>
-
 						<input type="hidden" id="sTags_final" name="sTags_final" value="">
 					</div>
 					<div id="queryResults">
-						<div class="queryTitle"><h2>Projects</h2></div>
-						<div class="queryTitle"><h2>Stories</h2></div>
+						<div id="queryProjects" class="queryTitle"><h2>Projects</h2></div>
+						<div id="queryStories" class="queryTitle"><h2>Stories</h2></div>
 					</div>
 				</div>
 			</div>
@@ -116,11 +109,33 @@
 		<script>
 			var metadata = {{ metadata|safe }};
 
-			// Metadata Management //
+			// Metadata Instance //
 			let metadata_handler = new MetadataHandling(metadata.projects, metadata.stories, metadata.tags);
+
+			// Metatdata Management //			
+			function keywordParser(e){
+				var string = e.value.toLowerCase();
+				var string_list = string.split(" ")
+					.map(element=> element.replaceAll(",", "").trim())
+					.filter(element=>element);
+				var value_string = string_list.join(",");
+				$("#sKeywords_final").val(value_string).trigger("change");
+			};
+			
+			function metadataFilter(){
+				var keywords = document.getElementById("sKeywords_final").value;
+				var start = document.getElementById("sStartDate").value;
+				var end = document.getElementById("sEndDate").value;
+				var order = document.getElementById("sOrder").value;
+				var tags = document.getElementById("sTags_final").value;
+
+				project_story_dict = metadata_handler.get_filtered_results(
+					keywords, start, end, order, tags);
+			};
+			$("#sKeywords_final").change(metadataFilter);
+			$("#sTags_final").change(metadataFilter);
 			
 			// Tag Bar Management //
-
 			function tagBarEvent(e){
 				// tag bar event listener (record enter when typing or click event)
 				if(e.key=="Enter" || e.key==undefined){
@@ -141,24 +156,22 @@
 				};
 			};
 
-			const inputHandler = function(e){
-				// hidden input change
+			const inputTagHandler = function(e){
 				var filtered_tags = metadata_handler.get_filtered_tags(e.target.value, "sTags_final");
 				sTagHandler.appendToDataList(filtered_tags, "sTagsOptions");
 			}
 
-			$("#sTags_final").change(function(){
-				// hidden element change event
-				console.log("Filter Function");
-			})
-
+			// Variable Declaration //
 			let sTagHandler = new TagHandling("sTags", "sTagsHolder", "sTags_final");
 			var full_tag_list = metadata_handler.get_tag_list();
 			var filtered_tags = metadata_handler.get_filtered_tags("", "sTags_final");
 
+			// One-Time-Run //
 			sTagHandler.tag_input.addEventListener("keyup", tagBarEvent);
 			sTagHandler.appendToDataList(filtered_tags, "sTagsOptions");
-			document.getElementById("sTags").addEventListener('input', inputHandler);
+			document.getElementById("sTags").addEventListener('input', inputTagHandler);
+
+			metadataFilter();
 		</script>
 	</body>
 </html>

@@ -61,8 +61,4 @@ class TagHandling{
 			datalist_element.appendChild(option);
 		}
 	}
-
-	setUserID(myValue) {
-		$('#sTags_final').val(myValue).trigger('change');
-	}
 }

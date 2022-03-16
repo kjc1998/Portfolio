@@ -22,6 +22,7 @@
 		
 		<!-- User Defined js -->
 		<script src="{% static 'js/generic.js' %}"></script>
+		<script src="{% static 'js/metadata.js' %}"></script>
 	</head>
 	<body class="is-preload">
 		<div id="navBar">
@@ -82,10 +83,13 @@
 							<option value="descending" selected="selected">Descending</option>
 						</select>
 
-						<label for="sTags">Tags:</label>(Press ENTER to key in tag name)
+						<!-- Tags -->
+						<label for="sTags">Tags:</label>(Choose from DropDown or Type in Tag Name before pressing ENTER)
 						<div id="sTagsHolder"></div>
+
 						<input type="text" id="sTags" name="sTags" list="sTagsOptions" onkeydown="return event.key != 'Enter';">
 						<datalist id="sTagsOptions"></datalist>
+
 						<input type="hidden" id="sTags_final" name="sTags_final" value="">
 					</div>
 					<div id="queryResults">
@@ -112,43 +116,49 @@
 		<script>
 			var metadata = {{ metadata|safe }};
 
-			let sTagHandler = new TagHandling("sTags", "sTagsHolder", "sTags_final");
+			// Metadata Management //
 			let metadata_handler = new MetadataHandling(metadata.projects, metadata.stories, metadata.tags);
 			
-			var full_tag_list = metadata_handler.get_tag_list();
-			sTagHandler.tag_input.addEventListener(
-				"keyup", function(e){
-					if(e.key=="Enter"){
-						var tag = e.target.value.replace(/\s+/g, " ");
-						tag = tag.trim().toLowerCase();
-						if(tag && full_tag_list.includes(tag)){
-							if(!sTagHandler.tags.includes(tag) && tag){
-								sTagHandler.tags.push(tag);
-								sTagHandler.displayTag("sTagHandler");
-								e.target.value = "";
-								sTagHandler.appendToHiddenTag();
-								metadata_handler.get_filtered_tags("", "sTags_final", "sTagsOptions");
-							}else{
-								alert("This tag has been added");
-							}
-						}else{
-							alert("No Such Tag");
-						}
-					}
-				}
-			);
+			// Tag Bar Management //
 
-			// Tags Management Event Listener
-			metadata_handler.get_filtered_tags("", "sTags_final", "sTagsOptions");
+			function tagBarEvent(e){
+				// tag bar event listener (record enter when typing or click event)
+				if(e.key=="Enter" || e.key==undefined){
+					var tag = e.target.value.replace(/\s+/g, " ");
+					tag = tag.trim().toLowerCase();
+					if(tag && full_tag_list.includes(tag)){
+						if(!sTagHandler.tags.includes(tag) && tag){
+							sTagHandler.tags.push(tag);
+							sTagHandler.displayTag("sTagHandler");
+							e.target.value = "";
+							sTagHandler.appendToHiddenTag();
+							var filtered_tags = metadata_handler.get_filtered_tags("", "sTags_final");
+							sTagHandler.appendToDataList(filtered_tags, "sTagsOptions");
+						}else{alert("This tag has been added")}
+					}else{
+						if(tag){alert("No Such Tag")}
+					};
+				};
+			};
+
 			const inputHandler = function(e){
-				metadata_handler.get_filtered_tags(e.target.value, "sTags_final", "sTagsOptions");
+				// hidden input change
+				var filtered_tags = metadata_handler.get_filtered_tags(e.target.value, "sTags_final");
+				sTagHandler.appendToDataList(filtered_tags, "sTagsOptions");
 			}
-			document.getElementById("sTags").addEventListener('input', inputHandler);
 
-			// hidden element change event
-			$('#sTags_final').change(function(){
+			$("#sTags_final").change(function(){
+				// hidden element change event
 				console.log("Filter Function");
 			})
+
+			let sTagHandler = new TagHandling("sTags", "sTagsHolder", "sTags_final");
+			var full_tag_list = metadata_handler.get_tag_list();
+			var filtered_tags = metadata_handler.get_filtered_tags("", "sTags_final");
+
+			sTagHandler.tag_input.addEventListener("keyup", tagBarEvent);
+			sTagHandler.appendToDataList(filtered_tags, "sTagsOptions");
+			document.getElementById("sTags").addEventListener('input', inputHandler);
 		</script>
 	</body>
 </html>

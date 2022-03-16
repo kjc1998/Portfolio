@@ -52,42 +52,17 @@ class TagHandling{
 		$(`#${this.hiddenID}`).val(hidden_string.substring(1)).trigger("change");
 	}
 
-	setUserID(myValue) {
-		$('#sTags_final').val(myValue).trigger('change');
-	}
-}
-
-class MetadataHandling{
-	constructor(project_list, story_list, tag_list){
-		this._project_list = project_list;
-		this._story_list = story_list;
-		this._tag_list = tag_list;
-	}
-
-	get_tag_list(){
-		var tag_list = this._tag_list.map(element=>element.name);
-		return tag_list;
-	}
-
-	get_filtered_tags(input_string, hidden_id, datalist_id){
-		var hidden_element = document.getElementById(hidden_id);
-		var hidden_element_list = String(hidden_element.value).split(",");
-
+	appendToDataList(datalist, datalist_id){
 		var datalist_element = document.getElementById(datalist_id);
-		var answer = [];
-		for(var i=0; i < this._tag_list.length; ++i){
-			var tag_name = this._tag_list[i].name;
-			if(tag_name.includes(input_string) && !hidden_element_list.includes(tag_name)){
-				if(!answer.includes(tag_name)){
-					answer.push(tag_name);
-				}
-			}
-		}
 		$(`#${datalist_id} option`).remove(); // clear then append
-		for(var i=0; i < answer.length; ++i){
+		for(var i=0; i < datalist.length; ++i){
 			var option = document.createElement('option');
-			option.value = answer[i];
+			option.value = datalist[i];
 			datalist_element.appendChild(option);
 		}
+	}
+
+	setUserID(myValue) {
+		$('#sTags_final').val(myValue).trigger('change');
 	}
 }

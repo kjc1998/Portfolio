@@ -26,7 +26,36 @@ class MetadataHandling{
         return answer;
 	}
 
-	get_filtered_results(){
+	getKeyUpdates(keywords, start, end, order, tags){
+		var answer = [];
+		if(keywords!=localStorage.getItem("keywords")){
+			localStorage.setItem("keywords", keywords);
+			answer.push("keywords");
+		}
+
+		if(start!=localStorage.getItem("start")){
+			localStorage.setItem("start", start);
+			answer.push("start");
+		}
+		
+		if(end!=localStorage.getItem("end")){
+			localStorage.setItem("end", end);
+			answer.push("end");
+		}
+
+		if(order!=localStorage.getItem("order")){
+			localStorage.setItem("order", order);
+			answer.push("order");
+		}
+
+		if(tags!=localStorage.getItem("tags")){
+			localStorage.setItem("tags", tags);
+			answer.push("tags");
+		}
+		return answer
+	}
+
+	get_filtered_results(key){
 		
 	}
 }

@@ -123,14 +123,13 @@
 			};
 			
 			function metadataFilter(){
-				var keywords = document.getElementById("sKeywords_final").value;
-				var start = document.getElementById("sStartDate").value;
-				var end = document.getElementById("sEndDate").value;
-				var order = document.getElementById("sOrder").value;
-				var tags = document.getElementById("sTags_final").value;
+				var keywords = JSON.stringify(String(document.getElementById("sKeywords_final").value).split(","));
+				var start = String(document.getElementById("sStartDate").value);
+				var end = String(document.getElementById("sEndDate").value);
+				var order = String(document.getElementById("sOrder").value);
+				var tags = JSON.stringify(String(document.getElementById("sTags_final").value).split(","));
 
-				project_story_dict = metadata_handler.get_filtered_results(
-					keywords, start, end, order, tags);
+				var updated_list = metadata_handler.getKeyUpdates(keywords, start, end, order, tags);
 			};
 			$("#sKeywords_final").change(metadataFilter);
 			$("#sTags_final").change(metadataFilter);
@@ -167,10 +166,10 @@
 			var filtered_tags = metadata_handler.get_filtered_tags("", "sTags_final");
 
 			// One-Time-Run //
+			localStorage.clear();
 			sTagHandler.tag_input.addEventListener("keyup", tagBarEvent);
 			sTagHandler.appendToDataList(filtered_tags, "sTagsOptions");
 			document.getElementById("sTags").addEventListener('input', inputTagHandler);
-
 			metadataFilter();
 		</script>
 	</body>

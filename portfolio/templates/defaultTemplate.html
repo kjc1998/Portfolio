@@ -112,7 +112,19 @@
 			// Metadata Instance //
 			let metadata_handler = new MetadataHandling(metadata.projects, metadata.stories, metadata.tags);
 
-			// Metatdata Management //			
+			// Metatdata Management //
+			function metadataDOMManagement(project_list, story_list){
+				var projectDOM = document.getElementById("queryProjects");
+				var storyDOM = document.getElementById("queryStories");
+				for(var i in project_list){
+					var project = project_list[i];
+					console.log(project);
+				}
+				for(var i in story_list){
+					var story = story_list[i];
+					console.log(story);
+				}
+			}
 			function keywordParser(e){
 				var string = e.value.toLowerCase();
 				var string_list = string.split(" ")
@@ -134,7 +146,7 @@
 
 				var project_list = metadata_handler.project_match;
 				var story_list = metadata_handler.story_match;
-				console.log(project_list);
+				metadataDOMManagement(project_list, story_list);
 			};
 			$("#sKeywords_final").change(metadataFilter);
 			$("#sTags_final").change(metadataFilter);

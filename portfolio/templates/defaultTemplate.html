@@ -78,7 +78,7 @@
 						</select>
 
 						<!-- Tags -->
-						<label for="sTags">Tags:</label>(Choose from DropDown or Type in Tag Name before pressing ENTER)
+						<label for="sTags">Tags:<br>(DropDown or Type in Tag Name before pressing ENTER)</label>
 						<div id="sTagsHolder"></div>
 
 						<input type="text" id="sTags" name="sTags" list="sTagsOptions" onkeydown="return event.key != 'Enter';">
@@ -129,7 +129,7 @@
 					var project = project_list[i];
 
 					var li_tag = document.createElement("li");
-					var a_tag = `<h3><a href=${project.url}>${project.name}</a></h3>`;
+					var a_tag = `<a href=${project.url}>${project.name}</a>`;
 					li_tag.innerHTML = a_tag;
 					projectDOM.append(li_tag);
 				}
@@ -137,7 +137,7 @@
 					var story = story_list[i];
 
 					var li_tag = document.createElement("li");
-					var a_tag = `<h3><a href=${story.url}>${story.name}</a></h3>`;
+					var a_tag = `<a href=${story.url}>${story.name}</a>`;
 					li_tag.innerHTML = a_tag;
 					storyDOM.append(li_tag);
 				}

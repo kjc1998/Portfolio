@@ -92,30 +92,33 @@
         {% endfor %}
     </div>
 
-    <script>
-        Date.prototype.toDateInputValue = (function() {
-            var local = new Date(this);
-            local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
-            return local.toJSON().slice(0,10);
-        });
+    {% if request.user.is_authenticated %}
+        <!-- DOM Handling -->
+        <script>
+            Date.prototype.toDateInputValue = (function() {
+                var local = new Date(this);
+                local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+                return local.toJSON().slice(0,10);
+            });
 
-        // Default Starting Value
-        document.getElementById("projectStart_new").value = new Date().toDateInputValue();
-        document.getElementById("projectEnd_new").value = new Date().toDateInputValue();
-        function minEndDate(row_id){
-            var startDate = document.getElementById(`projectStart_${row_id}`).value;
-            var endDateElement = document.getElementById(`projectEnd_${row_id}`);
-            endDateElement.min = startDate;
-        }
-        minEndDate('new');
+            // Default Starting Value
+            document.getElementById("projectStart_new").value = new Date().toDateInputValue();
+            document.getElementById("projectEnd_new").value = new Date().toDateInputValue();
+            function minEndDate(row_id){
+                var startDate = document.getElementById(`projectStart_${row_id}`).value;
+                var endDateElement = document.getElementById(`projectEnd_${row_id}`);
+                endDateElement.min = startDate;
+            }
+            minEndDate('new');
 
-        // Edit Project
-        function editProjectFunction(pid, hide_id, show_id){
-            var hideEle = document.getElementById(hide_id);
-            var showEle = document.getElementById(show_id);
-            hideEle.style.display="none";
-            showEle.style.display="";
-            minEndDate(pid);
-        }
-    </script>
+            // Edit Project
+            function editProjectFunction(pid, hide_id, show_id){
+                var hideEle = document.getElementById(hide_id);
+                var showEle = document.getElementById(show_id);
+                hideEle.style.display="none";
+                showEle.style.display="";
+                minEndDate(pid);
+            }
+        </script>
+    {% endif %}
 {% endblock %}

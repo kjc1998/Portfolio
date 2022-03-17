@@ -1,3 +1,39 @@
+// DOM Elements Handling //
+function metadataDOMManagement(project_list, story_list){
+	var projectDOM = $("#queryProjects ul");
+	var storyDOM = $("#queryStories ul");
+
+	projectDOM.empty();
+	storyDOM.empty();
+	for(var i in project_list){
+		var project = project_list[i];
+
+		var li_tag = document.createElement("li");
+		var a_tag = `<a href=${project.url}>${project.name}</a>`;
+		li_tag.innerHTML = a_tag;
+		projectDOM.append(li_tag);
+	}
+	for(var i in story_list){
+		var story = story_list[i];
+
+		var li_tag = document.createElement("li");
+		var a_tag = `<a href=${story.url}>${story.name}</a>`;
+		li_tag.innerHTML = a_tag;
+		storyDOM.append(li_tag);
+	}
+}
+
+function keywordParser(e){
+	var string = e.value.toLowerCase();
+	var string_list = string.split(" ")
+		.map(element=> element.replaceAll(",", "").trim())
+		.filter(element=>element);
+	var value_string = string_list.join(",");
+	$("#sKeywords_final").val(value_string).trigger("change");
+};
+
+
+// Modular Class Handling //
 class MetadataHandling{
 	constructor(project_list, story_list, tag_list){
 		this._project_dict = new Object();

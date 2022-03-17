@@ -7,7 +7,7 @@
 2) Personal Edit Setup    [Done]
 3) Project Page           [Done]
 4) Story Page             [Done]
-5) Filter Bar             [95%]
+5) Filter Bar             [Done]
 6) UI                     [0%]
 7) Cloud Hosting          [0%]
 ```

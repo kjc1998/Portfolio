@@ -74,35 +74,37 @@
         {% endfor %}
     </div>
 
-    <!-- DOM handling -->
-    <script>
-        Date.prototype.toDateInputValue = (function() {
-            var local = new Date(this);
-            local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
-            return local.toJSON().slice(0,10);
-        });
-        document.getElementById("storyDate_new").value = new Date().toDateInputValue();
+    {% if request.user.is_authenticated %}
+        <!-- DOM handling -->
+        <script>
+            Date.prototype.toDateInputValue = (function() {
+                var local = new Date(this);
+                local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+                return local.toJSON().slice(0,10);
+            });
+            document.getElementById("storyDate_new").value = new Date().toDateInputValue();
 
-        // Tag Handling
-        let storyTagHandler = new TagHandling("storyTags_new", "tagsColumn", "storyTags_final");
-        storyTagHandler.tag_input.addEventListener("keyup", function(e){
-                if(e.key=="Enter"){
-                    var tag = e.target.value.replace(/\s+/g, " ");
-                    if(tag.length > 0){
-                        var tag_array = tag.split(",").map(element => element.trim());
-                        var unique_array = [...new Set(tag_array)];
-                        unique_array.forEach(tag=>{
-                            tag = tag.trim();
-                            if(!storyTagHandler.tags.includes(tag) && tag){
-                                storyTagHandler.tags.push(tag.toLowerCase());
-                            }
-                        });
-                        storyTagHandler.displayTag("storyTagHandler");
-                    };
-                    e.target.value = "";
-                    storyTagHandler.appendToHiddenTag();
+            // Tag Handling
+            let storyTagHandler = new TagHandling("storyTags_new", "tagsColumn", "storyTags_final");
+            storyTagHandler.tag_input.addEventListener("keyup", function(e){
+                    if(e.key=="Enter"){
+                        var tag = e.target.value.replace(/\s+/g, " ");
+                        if(tag.length > 0){
+                            var tag_array = tag.split(",").map(element => element.trim());
+                            var unique_array = [...new Set(tag_array)];
+                            unique_array.forEach(tag=>{
+                                tag = tag.trim();
+                                if(!storyTagHandler.tags.includes(tag) && tag){
+                                    storyTagHandler.tags.push(tag.toLowerCase());
+                                }
+                            });
+                            storyTagHandler.displayTag("storyTagHandler");
+                        };
+                        e.target.value = "";
+                        storyTagHandler.appendToHiddenTag();
+                    }
                 }
-            }
-        );
-    </script>
+            );
+        </script>
+    {% endif %}
 {% endblock %}

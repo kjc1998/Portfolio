@@ -93,62 +93,64 @@
         
     {% endif %}
 
-    <!-- DOM handling -->
-    <script>
-        // Text Area
-        function textAreaHandling(){
-            var textAreaDiv = document.getElementById("storyContent");
-            var textAreaEditDiv = document.getElementById("storyContent_edit");
-            var storyContent = {{ story.content|safe }};
-            
-            textAreaDiv.innerHTML = storyContent;
-            textAreaEditDiv.innerHTML = storyContent;
-        }
-
-        // Hide and Show buttons and divs
-        function editStoryFunction(){
-            var view_div = getElementByXpath("//div[@id='viewStory']");
-            var edit_div = getElementByXpath("//div[@id='editStory']");
-            var delete_div = getElementByXpath("//div[@id='deleteStory']");
-            if(view_div.style.display == ""){
-                view_div.style.display = "none";
-                edit_div.style.display = "";
-                delete_div.style.display = "";
-            }else{
-                view_div.style.display = "";
-                edit_div.style.display = "none";
-                delete_div.style.display = "none";
+    {% if request.user.is_authenticated %}
+        <!-- DOM handling -->
+        <script>
+            // Text Area
+            function textAreaHandling(){
+                var textAreaDiv = document.getElementById("storyContent");
+                var textAreaEditDiv = document.getElementById("storyContent_edit");
+                var storyContent = {{ story.content|safe }};
+                
+                textAreaDiv.innerHTML = storyContent;
+                textAreaEditDiv.innerHTML = storyContent;
             }
-        }
 
-        // Tag Handling
-        let storyTagHandler = new TagHandling("storyTags_edit", "tagsColumn", "storyTags_final", {{ story.tag_list|safe }});
-        storyTagHandler.appendToHiddenTag();
-        storyTagHandler.displayTag("storyTagHandler");
-
-        storyTagHandler.tag_input.addEventListener("keyup", function(e){
-                if(e.key=="Enter"){
-                    var tag = e.target.value.replace(/\s+/g, " ");
-                    if(tag.length > 0){
-                        var tag_array = tag.split(",").map(element => element.trim());
-                        var unique_array = [...new Set(tag_array)];
-                        unique_array.forEach(tag=>{
-                            tag = tag.trim();
-                            if(!storyTagHandler.tags.includes(tag) && tag){
-                                storyTagHandler.tags.push(tag.toLowerCase());
-                            }
-                        });
-                        storyTagHandler.displayTag("storyTagHandler");
-                    };
-                    e.target.value = "";
-                    storyTagHandler.appendToHiddenTag();
+            // Hide and Show buttons and divs
+            function editStoryFunction(){
+                var view_div = getElementByXpath("//div[@id='viewStory']");
+                var edit_div = getElementByXpath("//div[@id='editStory']");
+                var delete_div = getElementByXpath("//div[@id='deleteStory']");
+                if(view_div.style.display == ""){
+                    view_div.style.display = "none";
+                    edit_div.style.display = "";
+                    delete_div.style.display = "";
+                }else{
+                    view_div.style.display = "";
+                    edit_div.style.display = "none";
+                    delete_div.style.display = "none";
                 }
             }
-        );
 
-        // Image handling
+            // Tag Handling
+            let storyTagHandler = new TagHandling("storyTags_edit", "tagsColumn", "storyTags_final", {{ story.tag_list|safe }});
+            storyTagHandler.appendToHiddenTag();
+            storyTagHandler.displayTag("storyTagHandler");
 
-        // To be run when page loaded
-        textAreaHandling();
-    </script>
+            storyTagHandler.tag_input.addEventListener("keyup", function(e){
+                    if(e.key=="Enter"){
+                        var tag = e.target.value.replace(/\s+/g, " ");
+                        if(tag.length > 0){
+                            var tag_array = tag.split(",").map(element => element.trim());
+                            var unique_array = [...new Set(tag_array)];
+                            unique_array.forEach(tag=>{
+                                tag = tag.trim();
+                                if(!storyTagHandler.tags.includes(tag) && tag){
+                                    storyTagHandler.tags.push(tag.toLowerCase());
+                                }
+                            });
+                            storyTagHandler.displayTag("storyTagHandler");
+                        };
+                        e.target.value = "";
+                        storyTagHandler.appendToHiddenTag();
+                    }
+                }
+            );
+
+            // Image handling
+
+            // To be run when page loaded
+            textAreaHandling();
+        </script>
+    {% endif %}
 {% endblock %}

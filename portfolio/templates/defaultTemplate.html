@@ -4,7 +4,10 @@
 		{% block title %}{% endblock %}
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=0.7, user-scalable=no">
+		<meta name="msapplication-TileColor" content="#ffffff">
+		<meta name="theme-color" content="#ffffff">
 		{% load static %}
+		<link rel="icon" type="image/png" sizes="16x16"  href="{{ MEDIA_URl }}/general/favicon-16x16.png">
 		<link rel="stylesheet" href="{% static 'css/main.css' %}" />
 		<link rel="stylesheet" href="{% static 'css/sideBar.css' %}" />
 		<link rel="stylesheet" href="{% static 'css/contactFooter.css' %}">
@@ -119,38 +122,6 @@
 			let metadata_handler = new MetadataHandling(metadata.projects, metadata.stories, metadata.tags);
 
 			// Metatdata Management //
-			function metadataDOMManagement(project_list, story_list){
-				var projectDOM = $("#queryProjects ul");
-				var storyDOM = $("#queryStories ul");
-				// empty content
-				projectDOM.empty();
-				storyDOM.empty();
-				for(var i in project_list){
-					var project = project_list[i];
-
-					var li_tag = document.createElement("li");
-					var a_tag = `<a href=${project.url}>${project.name}</a>`;
-					li_tag.innerHTML = a_tag;
-					projectDOM.append(li_tag);
-				}
-				for(var i in story_list){
-					var story = story_list[i];
-
-					var li_tag = document.createElement("li");
-					var a_tag = `<a href=${story.url}>${story.name}</a>`;
-					li_tag.innerHTML = a_tag;
-					storyDOM.append(li_tag);
-				}
-			}
-			function keywordParser(e){
-				var string = e.value.toLowerCase();
-				var string_list = string.split(" ")
-					.map(element=> element.replaceAll(",", "").trim())
-					.filter(element=>element);
-				var value_string = string_list.join(",");
-				$("#sKeywords_final").val(value_string).trigger("change");
-			};
-			
 			function metadataFilter(){
 				var keywords = JSON.stringify(String(document.getElementById("sKeywords_final").value).split(","));
 				var start = String(document.getElementById("sStartDate").value);

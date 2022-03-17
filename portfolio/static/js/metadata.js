@@ -69,10 +69,10 @@ class MetadataHandling{
 			for(var i in keyword_list){
 				var keyword = keyword_list[i];
 				// name
-				var current_projects = this._project_list.filter(element=>element.name.includes(keyword));
-				var story_name = this._story_list.filter(element=>element.name.includes(keyword));
+				var current_projects = this._project_list.filter(element=>element.name.toLowerCase().includes(keyword));
+				var story_name = this._story_list.filter(element=>element.name.toLowerCase().includes(keyword));
 				// content
-				var story_content = this._story_list.filter(element=>element.content.includes(keyword));
+				var story_content = this._story_list.filter(element=>element.content.toLowerCase().includes(keyword));
 				var current_stories = [...new Set([...story_name, ...story_content])];
 				// match
 				projects = projects.filter(value=>current_projects.includes(value));

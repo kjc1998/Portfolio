@@ -77,24 +77,33 @@
   width: 40%;
 }
 
+#searchQuery > label {
+  margin-top: 30px;
+}
+
 #queryResults {
   position: relative;
   border-radius: 10%;
   border: 2px solid grey;
   width: 55%;
-}
-
-#searchQuery > label {
-  margin-top: 30px;
+  vertical-align: top;
 }
 
 .queryTitle {
   margin: auto;
+  display: block;
   width: 80%;
   height: 50%;
   text-align: center;
+  overflow-y: scroll;
 }
 .queryTitle > h2 {
   margin: 0;
+  padding: 0;
   border-bottom: 2px solid grey;
+}
+ul.no-bullets {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 }

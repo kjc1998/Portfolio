@@ -133,15 +133,22 @@ function openSearch() {
 	var modal = document.getElementById("search");
 	var overlay = document.getElementById("overlay");
 	var main = document.getElementById("main");
+	var body = document.getElementsByTagName("body")[0];
 
 	modal.classList.add("active");
 	overlay.classList.add("active");
 	main.classList.add("avoid-clicks");
+	body.classList.add("avoid-scroll");
 };
 
 function closeSearch() {
 	var modal = document.getElementById("search");
+	var overlay = document.getElementById("overlay");
+	var main = document.getElementById("main");
+	var body = document.getElementsByTagName("body")[0];
+
 	modal.classList.remove('active');
 	overlay.classList.remove("active");
 	main.classList.remove('avoid-clicks');
+	body.classList.remove("avoid-scroll")
 };

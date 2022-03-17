@@ -3330,3 +3330,22 @@ textarea {
 .avoid-clicks {
   pointer-events: none;
 }
+
+.avoid-scroll {
+  overflow: hidden;
+}
+
+/* Scroll Bar Handling */
+
+/* Track */
+*::-webkit-scrollbar {
+  box-shadow: transparent;
+  border-radius: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: #e6e6e6;
+  border-radius: 20px;
+}

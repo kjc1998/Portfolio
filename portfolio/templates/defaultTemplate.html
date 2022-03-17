@@ -86,8 +86,14 @@
 						<input type="hidden" id="sTags_final" name="sTags_final" value="">
 					</div>
 					<div id="queryResults">
-						<div id="queryProjects" class="queryTitle"><h2>Projects</h2></div>
-						<div id="queryStories" class="queryTitle"><h2>Stories</h2></div>
+						<div id="queryProjects" class="queryTitle">
+							<h2>Projects</h2>
+							<ul class="no-bullets"></ul>
+						</div>
+						<div id="queryStories" class="queryTitle">
+							<h2>Stories</h2>
+							<ul class="no-bullets"></ul>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -114,15 +120,26 @@
 
 			// Metatdata Management //
 			function metadataDOMManagement(project_list, story_list){
-				var projectDOM = document.getElementById("queryProjects");
-				var storyDOM = document.getElementById("queryStories");
+				var projectDOM = $("#queryProjects ul");
+				var storyDOM = $("#queryStories ul");
+				// empty content
+				projectDOM.empty();
+				storyDOM.empty();
 				for(var i in project_list){
 					var project = project_list[i];
-					console.log(project);
+
+					var li_tag = document.createElement("li");
+					var a_tag = `<h3><a href=${project.url}>${project.name}</a></h3>`;
+					li_tag.innerHTML = a_tag;
+					projectDOM.append(li_tag);
 				}
 				for(var i in story_list){
 					var story = story_list[i];
-					console.log(story);
+
+					var li_tag = document.createElement("li");
+					var a_tag = `<h3><a href=${story.url}>${story.name}</a></h3>`;
+					li_tag.innerHTML = a_tag;
+					storyDOM.append(li_tag);
 				}
 			}
 			function keywordParser(e){
@@ -182,7 +199,7 @@
 			var full_tag_list = metadata_handler.get_tag_list();
 			var filtered_tags = metadata_handler.get_filtered_tags("", "sTags_final");
 
-			// One-Time-Run //
+			// One-Time-Run
 			localStorage.clear();
 			sTagHandler.tag_input.addEventListener("keyup", tagBarEvent);
 			sTagHandler.appendToDataList(filtered_tags, "sTagsOptions");

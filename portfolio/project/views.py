@@ -195,6 +195,8 @@ def storyList(request, pid):
     story_page_list, pages = pagination_handling(stories, 5, request)
 
     # Data parsing
+    current_project.start_date = current_project.start_date.strftime("%Y-%m-%d")
+    current_project.end_date = current_project.end_date.strftime("%Y-%m-%d")
     for story in story_page_list:
         story.date = story.date.strftime("%Y-%m-%d")
         story.tag_list = [t.name for t in story.tags.all()]

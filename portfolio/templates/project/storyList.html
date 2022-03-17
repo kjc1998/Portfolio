@@ -41,7 +41,7 @@
                         </tr>
                         <tr>
                             <td>Date:</td>
-                            <td><input type="date" id="storyDate_new" name="storyDate_new" required></td>
+                            <td><input type="date" id="storyDate_new" name="storyDate_new" min="{{ project.start_date }}" max="{{ project.end_date }}" required></td>
                         </tr>
                         <tr>
                             <td>Tags:<br>(Press enter or add a comma after each tag)</td>

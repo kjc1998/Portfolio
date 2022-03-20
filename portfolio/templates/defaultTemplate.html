@@ -27,6 +27,8 @@
 		<script src="{% static 'js/generic.js' %}"></script>
 		<script src="{% static 'js/tag.recommendation.js' %}"></script>
 		<script src="{% static 'js/metadata.js' %}"></script>
+		<!-- Header Variable js -->
+		<script>var metadata = {{ metadata|safe }};</script>
 	</head>
 	<body class="is-preload">
 		<div id="navBar">
@@ -117,9 +119,6 @@
 
 		<!-- SearchBar Handling -->
 		<script>
-			// Variable Declaration //
-			var metadata = {{ metadata|safe }};
-
 			// Instance Declaration //
 			let metadata_handler = new MetadataHandling(metadata.projects, metadata.stories, metadata.tags);
 			let sTagHandler = new TagRecommendation(

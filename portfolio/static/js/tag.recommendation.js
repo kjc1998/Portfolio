@@ -71,21 +71,41 @@ class TagRecommendation{
 
     /// EVENT LISTENER METHODS ///
     tag_bar_event(instance, event){
-        if(event.key=="Enter" || event.key==undefined){
-            var tag = instance.get_input_field();
-            if((instance._full_tag_list.includes(tag) || !instance._match_input) && tag){
-                if(!instance._holder_tags.includes(tag) && tag){
-                    event.target.value = "";
-                    
-                    instance._holder_tags.push(tag);
+        if(instance._match_input){
+            if(event.key=="Enter" || event.key==undefined){
+                var tag = instance.get_input_field();
+                if(instance._full_tag_list.includes(tag) && tag){
+                    if(!instance._holder_tags.includes(tag) && tag){
+                        event.target.value = "";
+                        
+                        instance._holder_tags.push(tag);
+                        instance.display_tag();
+                        instance.append_hidden_tag();
+                        instance.append_datalist(instance.get_filtered_tags(""));
+                    }else{alert("This tag has been added")}
+                }else{
+                    if(tag){alert("No Such Tag")}
+                };
+            };
+        }else{
+            if(event.key=="Enter"){
+                var tag_string = document.getElementById(instance._input_id).value.replace(/\s+/g, " ");
+                if(tag_string.length > 0){
+                    var tag_array = tag_string.split(",").map(element => element.trim());
+                    var unique_array = [...new Set(tag_array)];
+                    unique_array.forEach(tag=>{
+                        tag = tag.trim();
+                        if(!instance._holder_tags.includes(tag) && tag){
+                            instance._holder_tags.push(tag.toLowerCase());
+                        }
+                    });
                     instance.display_tag();
                     instance.append_hidden_tag();
                     instance.append_datalist(instance.get_filtered_tags(""));
-                }else{alert("This tag has been added")}
-            }else{
-                if(tag){alert("No Such Tag")}
-            };
-        };
+                };
+                event.target.value = "";
+            }
+        }
     };
 
     hidden_input_event(instance, event){

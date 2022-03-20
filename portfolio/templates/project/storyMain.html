@@ -46,7 +46,7 @@
                     <tbody>
                         <tr>
                             <td>Name:</td>
-                            <td><input type="text" id="storyName_edit" name="storyName_edit" value="{{ story.name }}" required></td>
+                            <td><input type="text" id="storyName_edit" name="storyName_edit" value="{{ story.name }}" placeholder="Story" autocomplete="off" required></td>
                         </tr>
                         <tr>
                             <td>Date:</td>
@@ -55,7 +55,7 @@
                         <tr>
                             <td>Tags:<br>(Press enter or add a comma after each tag)</td>
                             <td id="tagsColumn">
-                                <input type="text" id="storyTags_edit" name="storyTags_edit" onkeydown="return event.key != 'Enter';">
+                                <input type="text" id="storyTags_edit" name="storyTags_edit" onkeydown="return event.key != 'Enter';" autocomplete="off">
                                 <input type="hidden" id="storyTags_final" name="storyTags_final" value="">
                             </td>
                         </tr>

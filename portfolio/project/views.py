@@ -27,30 +27,33 @@ def projectList(request):
     if request.method == "POST":
         if request.user.is_authenticated:
             if "editProject" in request.POST:
-                field_entries = request.POST
-                project_id = field_entries["projectID"]
-                name = field_entries["projectName_"+project_id]
-                start = datetime.strptime(
-                    field_entries["projectStart_"+project_id], "%Y-%m-%d")
-                end = datetime.strptime(
-                    field_entries["projectEnd_"+project_id], "%Y-%m-%d")
-
-                # Check date
-                if start.date() > end.date():
-                    return error_page(request, 400, f"Start date cannot be more than End date")
-
-                edit_project = Project.objects.filter(
-                    id=int(project_id)).first()
-                edit_project.name = name
-                edit_project.start_date = start
                 try:
-                    ongoing = field_entries["projectOngoing_"+project_id]
-                    edit_project.end_date = datetime.now()
-                    edit_project.ongoing = True
-                except MultiValueDictKeyError:
-                    edit_project.end_date = end
-                    edit_project.ongoing = False
-                edit_project.save()
+                    field_entries = request.POST
+                    project_id = field_entries["projectID"]
+                    name = field_entries["projectName_"+project_id]
+                    start = datetime.strptime(
+                        field_entries["projectStart_"+project_id], "%Y-%m-%d")
+                    end = datetime.strptime(
+                        field_entries["projectEnd_"+project_id], "%Y-%m-%d")
+
+                    # Check date
+                    if start.date() > end.date():
+                        return error_page(request, 400, f"Start date cannot be more than End date")
+
+                    edit_project = Project.objects.filter(
+                        id=int(project_id)).first()
+                    edit_project.name = name
+                    edit_project.start_date = start
+                    try:
+                        ongoing = field_entries["projectOngoing_"+project_id]
+                        edit_project.end_date = datetime.now()
+                        edit_project.ongoing = True
+                    except MultiValueDictKeyError:
+                        edit_project.end_date = end
+                        edit_project.ongoing = False
+                    edit_project.save()
+                except IntegrityError:
+                    return error_page(request, 422, "This project already existed")
 
                 # Auto update stories' dates
                 stories_before = Story.objects.filter(
@@ -91,7 +94,7 @@ def projectList(request):
                         name=name, start_date=start, end_date=end, ongoing=ongoing)
                     new_project.save()
                 except IntegrityError:
-                    return error_page(request, 422, "This file already existed")
+                    return error_page(request, 422, "This project already existed")
         else:
             return error_page(request, 403, "Please login to enter this site")
 

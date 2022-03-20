@@ -1,4 +1,13 @@
-// DOM Elements Handling //
+/// DOM MANAGEMENT ///
+function keywordParser(event){
+	var string = event.target.value.toLowerCase();
+	var string_list = string.split(" ")
+		.map(element=> element.replaceAll(",", "").trim())
+		.filter(element=>element);
+	var value_string = string_list.join(",");
+	$("#sKeywords_final").val(value_string).trigger("change");
+};
+
 function metadataDOMManagement(project_list, story_list){
 	var projectDOM = $("#queryProjects ul");
 	var storyDOM = $("#queryStories ul");
@@ -23,17 +32,7 @@ function metadataDOMManagement(project_list, story_list){
 	}
 }
 
-function keywordParser(e){
-	var string = e.value.toLowerCase();
-	var string_list = string.split(" ")
-		.map(element=> element.replaceAll(",", "").trim())
-		.filter(element=>element);
-	var value_string = string_list.join(",");
-	$("#sKeywords_final").val(value_string).trigger("change");
-};
-
-
-// Modular Class Handling //
+/// CLASS HANDLING ///
 class MetadataHandling{
 	constructor(project_list, story_list, tag_list){
 		this._project_dict = new Object();
@@ -43,27 +42,6 @@ class MetadataHandling{
 		this._project_list = project_list;
 		this._story_list = story_list;
 		this._tag_list = tag_list;
-	}
-
-	get_tag_list(){
-		var tag_list = this._tag_list.map(element=>element.name);
-		return tag_list;
-	}
-
-	get_filtered_tags(input_string, hidden_id){
-		var hidden_element = document.getElementById(hidden_id);
-		var hidden_element_list = String(hidden_element.value).split(",");
-
-		var answer = [];
-		for(var i=0; i < this._tag_list.length; ++i){
-			var tag_name = this._tag_list[i].name;
-			if(tag_name.includes(input_string) && !hidden_element_list.includes(tag_name)){
-				if(!answer.includes(tag_name)){
-					answer.push(tag_name);
-				}
-			}
-		}
-        return answer;
 	}
 
 	getKeyUpdates(keywords, start, end, order, tags){

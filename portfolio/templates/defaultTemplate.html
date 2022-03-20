@@ -25,6 +25,7 @@
 		
 		<!-- User Defined js -->
 		<script src="{% static 'js/generic.js' %}"></script>
+		<script src="{% static 'js/tag.recommendation.js' %}"></script>
 		<script src="{% static 'js/metadata.js' %}"></script>
 	</head>
 	<body class="is-preload">
@@ -65,7 +66,7 @@
 				<div class="search-body">
 					<div id="searchQuery">
 						<label for="sKeywords">Keywords:</label>
-						<input type="search" id="sKeywords" name="sKeywords" placeholder="Keywords" onkeyup="keywordParser(this)" onsearch="keywordParser(this)">
+						<input type="search" id="sKeywords" name="sKeywords" placeholder="Keywords">
 						<input type="hidden" id="sKeywords_final" name="sKeywords_final" value="">
 
 						<label for="sStartDate">Date Range (Start):</label>
@@ -116,12 +117,14 @@
 
 		<!-- SearchBar Handling -->
 		<script>
+			// Variable Declaration //
 			var metadata = {{ metadata|safe }};
 
-			// Metadata Instance //
+			// Instance Declaration //
 			let metadata_handler = new MetadataHandling(metadata.projects, metadata.stories, metadata.tags);
+			let sTagHandler = new TagRecommendation(
+				"sTagHandler", "sTagsHolder", "sTags", "sTags_final", "sTagsOptions", [], metadata.tags, match_input=true);
 
-			// Metatdata Management //
 			function metadataFilter(){
 				var keywords = JSON.stringify(String(document.getElementById("sKeywords_final").value).split(","));
 				var start = String(document.getElementById("sStartDate").value);
@@ -136,46 +139,32 @@
 				var story_list = metadata_handler.story_match;
 				metadataDOMManagement(project_list, story_list);
 			};
-			$("#sKeywords_final").change(metadataFilter);
-			$("#sTags_final").change(metadataFilter);
-			
-			// Tag Bar Management //
-			function tagBarEvent(e){
-				// tag bar event listener (record enter when typing or click event)
-				if(e.key=="Enter" || e.key==undefined){
-					var tag = e.target.value.replace(/\s+/g, " ");
-					tag = tag.trim().toLowerCase();
-					if(tag && full_tag_list.includes(tag)){
-						if(!sTagHandler.tags.includes(tag) && tag){
-							sTagHandler.tags.push(tag);
-							sTagHandler.displayTag("sTagHandler");
-							e.target.value = "";
-							sTagHandler.appendToHiddenTag();
-							var filtered_tags = metadata_handler.get_filtered_tags("", "sTags_final");
-							sTagHandler.appendToDataList(filtered_tags, "sTagsOptions");
-						}else{alert("This tag has been added")}
-					}else{
-						if(tag){alert("No Such Tag")}
-					};
-				};
-			};
 
-			const inputTagHandler = function(e){
-				var filtered_tags = metadata_handler.get_filtered_tags(e.target.value, "sTags_final");
-				sTagHandler.appendToDataList(filtered_tags, "sTagsOptions");
+			// Metatdata Management //
+			function metadata_handling(){
+				$("#sKeywords_final").change(metadataFilter);
+				$("#sTags_final").change(metadataFilter);
+				metadataFilter();
+
+				// Event Listener
+				document.getElementById("sKeywords").addEventListener("keyup", keywordParser);
+				document.getElementById("sKeywords").addEventListener("search", keywordParser);
 			}
 
-			// Variable Declaration //
-			let sTagHandler = new TagHandling("sTags", "sTagsHolder", "sTags_final");
-			var full_tag_list = metadata_handler.get_tag_list();
-			var filtered_tags = metadata_handler.get_filtered_tags("", "sTags_final");
+			// Tag Management //
+			function tag_handling(){
+				var filtered_tags = sTagHandler.get_filtered_tags("");
+				sTagHandler.append_datalist(filtered_tags, "sTagsOptions");
+
+				// Event Listener
+				document.getElementById(sTagHandler._input_id).addEventListener("keyup", sTagHandler.tag_bar_event.bind(null, sTagHandler));
+				document.getElementById("sTags").addEventListener("input", sTagHandler.hidden_input_event.bind(null, sTagHandler));
+			}
 
 			// One-Time-Run
 			localStorage.clear();
-			sTagHandler.tag_input.addEventListener("keyup", tagBarEvent);
-			sTagHandler.appendToDataList(filtered_tags, "sTagsOptions");
-			document.getElementById("sTags").addEventListener('input', inputTagHandler);
-			metadataFilter();
+			metadata_handling();
+			tag_handling();
 		</script>
 	</body>
 </html>

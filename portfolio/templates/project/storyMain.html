@@ -55,7 +55,9 @@
                         <tr>
                             <td>Tags:<br>(Press enter or add a comma after each tag)</td>
                             <td id="tagsColumn">
-                                <input type="text" id="storyTags_edit" name="storyTags_edit" onkeydown="return event.key != 'Enter';" autocomplete="off">
+                                <input type="text" id="storyTags_edit" name="storyTags_edit" list="storyTags_Options" onkeydown="return event.key != 'Enter';" autocomplete="off">
+
+                                <datalist id="storyTags_Options"></datalist>
                                 <input type="hidden" id="storyTags_final" name="storyTags_final" value="">
                             </td>
                         </tr>
@@ -123,34 +125,17 @@
             }
 
             // Tag Handling
-            let storyTagHandler = new TagHandling("storyTags_edit", "tagsColumn", "storyTags_final", {{ story.tag_list|safe }});
-            storyTagHandler.appendToHiddenTag();
-            storyTagHandler.displayTag("storyTagHandler");
-
-            storyTagHandler.tag_input.addEventListener("keyup", function(e){
-                    if(e.key=="Enter"){
-                        var tag = e.target.value.replace(/\s+/g, " ");
-                        if(tag.length > 0){
-                            var tag_array = tag.split(",").map(element => element.trim());
-                            var unique_array = [...new Set(tag_array)];
-                            unique_array.forEach(tag=>{
-                                tag = tag.trim();
-                                if(!storyTagHandler.tags.includes(tag) && tag){
-                                    storyTagHandler.tags.push(tag.toLowerCase());
-                                }
-                            });
-                            storyTagHandler.displayTag("storyTagHandler");
-                        };
-                        e.target.value = "";
-                        storyTagHandler.appendToHiddenTag();
-                    }
-                }
-            );
-
-            // Image handling
-
+            let storyTagHandler = new TagRecommendation("storyTagHandler", "tagsColumn", "storyTags_edit", "storyTags_final", "storyTags_Options", {{ story.tag_list|safe }}, metadata.tags);
+            function story_tag_handling(){
+                storyTagHandler.display_tag();
+                storyTagHandler.append_hidden_tag();
+                storyTagHandler.append_datalist(storyTagHandler.get_filtered_tags(""));
+                document.getElementById(storyTagHandler._input_id).addEventListener("keyup", storyTagHandler.tag_bar_event.bind(null, storyTagHandler));
+            };
+            
             // To be run when page loaded
             textAreaHandling();
+            story_tag_handling();
         </script>
     {% endif %}
 {% endblock %}

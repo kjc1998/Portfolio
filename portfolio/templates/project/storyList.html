@@ -91,9 +91,10 @@
             
             function story_tag_handling(){
                 var filtered_tags = storyTagHandler.get_filtered_tags("");
-                storyTagHandler.append_datalist(filtered_tags, "storyTags_Options");
+                storyTagHandler.append_datalist(filtered_tags);
                 document.getElementById(storyTagHandler._input_id).addEventListener("keyup", storyTagHandler.tag_bar_event.bind(null, storyTagHandler));
             };
+            
             story_tag_handling();
         </script>
     {% endif %}

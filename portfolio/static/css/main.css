@@ -3348,3 +3348,7 @@ textarea {
   background-color: #e6e6e6;
   border-radius: 20px;
 }
+
+.homeImage {
+  height: 30vh;
+}

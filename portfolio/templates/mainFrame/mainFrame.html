@@ -6,7 +6,7 @@
     <div class="sideBar">
         <ul class="sideBar-ul">
             <a href="#experience"><li class="sideBar-li">Experience</span></li></a>
-            <a href="#projects"><li class="sideBar-li">Projects</li></a>
+            <a href="#work"><li class="sideBar-li">Recent Work</li></a>
             <a href="#cv"><li class="sideBar-li">CV</li></a>
             <a href="#contactFooter"><li class="sideBar-li" style="border-bottom: none !important;">Contact</li></a>
         </ul>
@@ -26,41 +26,24 @@
     </section>
 
     <!-- Two -->
-    <section id="projects">
+    <section id="work">
         <header class="major">
             <h2>Recent Work</h2>
         </header>
         <div class="row">
-            <article class="col-6 col-12-xsmall work-item">
-                <a href="{{ MEDIA_URl }}/projects/fulls/01.jpg" class="image fit thumb"><img src="{{ MEDIA_URl }}/projects/thumbs/01.jpg" alt="" /></a>
-                <h3>Magna sed consequat tempus</h3>
-                <p>Lorem ipsum dolor sit amet nisl sed nullam feugiat.</p>
-            </article>
-            <article class="col-6 col-12-xsmall work-item">
-                <a href="{{ MEDIA_URl }}/projects/fulls/02.jpg" class="image fit thumb"><img src="{{ MEDIA_URl }}/projects/thumbs/02.jpg" alt="" /></a>
-                <h3>Ultricies lacinia interdum</h3>
-                <p>Lorem ipsum dolor sit amet nisl sed nullam feugiat.</p>
-            </article>
-            <article class="col-6 col-12-xsmall work-item">
-                <a href="{{ MEDIA_URl }}/projects/fulls/03.jpg" class="image fit thumb"><img src="{{ MEDIA_URl }}/projects/thumbs/03.jpg" alt="" /></a>
-                <h3>Tortor metus commodo</h3>
-                <p>Lorem ipsum dolor sit amet nisl sed nullam feugiat.</p>
-            </article>
-            <article class="col-6 col-12-xsmall work-item">
-                <a href="{{ MEDIA_URl }}/projects/fulls/04.jpg" class="image fit thumb"><img src="{{ MEDIA_URl }}/projects/thumbs/04.jpg" alt="" /></a>
-                <h3>Quam neque phasellus</h3>
-                <p>Lorem ipsum dolor sit amet nisl sed nullam feugiat.</p>
-            </article>
-            <article class="col-6 col-12-xsmall work-item">
-                <a href="{{ MEDIA_URl }}/projects/fulls/05.jpg" class="image fit thumb"><img src="{{ MEDIA_URl }}/projects/thumbs/05.jpg" alt="" /></a>
-                <h3>Nunc enim commodo aliquet</h3>
-                <p>Lorem ipsum dolor sit amet nisl sed nullam feugiat.</p>
-            </article>
-            <article class="col-6 col-12-xsmall work-item">
-                <a href="{{ MEDIA_URl }}/projects/fulls/06.jpg" class="image fit thumb"><img src="{{ MEDIA_URl }}/projects/thumbs/06.jpg" alt="" /></a>
-                <h3>Risus ornare lacinia</h3>
-                <p>Lorem ipsum dolor sit amet nisl sed nullam feugiat.</p>
-            </article>
+            {% for story in story_list %}
+                <article class="col-6 col-12-xsmall work-item">
+                    <a href="{% url 'project:storyMain' pid=story.project_id sid=story.id %}" class="image fit thumb">
+                        {% if story.image %}
+                            <img class="homeImage" src="data:image/png;base64, {{ story.image }}" alt="">
+                        {% else %}
+                            <img class="homeImage" src="{{ MEDIA_URl }}/projects/thumbs/01.jpg" alt="" />
+                        {% endif %}
+                    </a>
+                    <h3>{{ story.project_name }}</h3>
+                    <p>{{ story.name }}</p>
+                </article>
+            {% endfor %}
         </div>
         <ul class="actions">
             <li><a class="button">Full Portfolio</a></li>

@@ -8,6 +8,7 @@
 3) Project Page           [Done]
 4) Story Page             [Done]
 5) Filter Bar             [Done]
+6) DropBox                [0%]
 6) UI                     [0%]
 7) Cloud Hosting          [0%]
 ```

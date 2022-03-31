@@ -54,7 +54,11 @@
                         </tr>
                         <tr>
                             <td>Image:</td>
-                            <td><input type="file" id="storyImage_new" name="storyImage_new" accept="image/*"/></td>
+                            <td>
+                                <div class="dragArea" ondrop="file_drop(event)">
+                                    <input type="file" id="storyImage_new" name="storyImage_new" accept="image/*"/>
+                                </div>
+                            </td>
                         </tr>
                         <tr>
                             <td>Content:</td>
@@ -78,6 +82,17 @@
 
     {% if request.user.is_authenticated %}
         <!-- DOM handling -->
+        <script>
+            function file_drop(event){
+                var file = event.dataTransfer.files[0];
+                var validExtensions = ["image/jpeg", "image/jpg", "image/png"];
+                if(!validExtensions.includes(file.type)){
+                    event.preventDefault(); // Prevent Upload
+                    alert("This is not an Image file");
+                    $("#storyImage_new").val("");
+                }
+            };
+        </script>
         <script>
             Date.prototype.toDateInputValue = (function() {
                 var local = new Date(this);

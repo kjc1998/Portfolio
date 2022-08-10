@@ -78,7 +78,7 @@
   width: 40%;
 }
 
-#searchQuery > label {
+#searchQuery>label {
   margin: 0px;
   padding-top: 20px;
 }
@@ -89,6 +89,7 @@
   border: 2px solid grey;
   width: 55%;
   vertical-align: top;
+  padding: 2.5vh 0;
 }
 
 .queryTitle {
@@ -100,7 +101,7 @@
   overflow-y: scroll;
 }
 
-.queryTitle > h2 {
+.queryTitle>h2 {
   margin: 0;
   padding: 0;
   border-bottom: 2px solid grey;

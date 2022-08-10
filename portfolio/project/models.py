@@ -10,6 +10,7 @@ class Project(models.Model):
     start_date = models.DateField(null=False)
     end_date = models.DateField(null=True)
     ongoing = models.BooleanField(null=True)
+    public = models.BooleanField(default=True)
 
 
 class Story(models.Model):

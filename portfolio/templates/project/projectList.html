@@ -3,122 +3,148 @@
 {% block title %}<title>KJ Chow Projects</title>{% endblock %}
 
 {% block content %}
-    <table id="projectTable">
-        <tr>
-            <th>Name</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-            <th>Tags</th>
-            <th>Ongoing</th>
-            {% if request.user.is_authenticated %}<th>Action</th>{% endif %}
-        </tr>
-        {% for project in projects %}
-
-            <!-- View Project -->
-            <tr id="projectView_{{ project.id }}">
-                <td><a href="{% url 'project:storyList' pid=project.id %}">{{ project.name }}</a></td>
-                <td>{{ project.start_date }}</td>
-                {% if project.ongoing == True %}<td></td>{% else %}<td>{{ project.end_date }}</td>{% endif %}
-                <td>
-                    {% if project.tag_list|length > 0 %}
-                        {% for tag in project.tag_list %}<li class="tags">{{ tag }}</li>{% endfor %}
-                    {% else %}
-                        <li class="tags">none</li>
-                    {% endif %}
-                </td>
-                <td>{{ project.ongoing }}</td>
-                {% if request.user.is_authenticated %}
-                    <td>
-                        <button name="editProject" type="button" onclick="editProjectFunction('{{ project.id }}', 'projectView_{{ project.id }}', 'projectEdit_{{ project.id }}')">Edit</button>
-                        <form action="{% url 'project:projectList' %}" method="POST">
-                            {% csrf_token %}
-                            <button name="deleteProject" value="{{ project.id }}" onclick="return confirmationPopUp(this)">Delete</button>
-                        </form>
-                    </td>
-                {% endif %}
-            </tr>
-            
-            <!-- Edit Project -->
-            {% if request.user.is_authenticated %}
-                <tr id="projectEdit_{{ project.id }}" style="display: none;">
-                    <form action="{% url 'project:projectList' %}" method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" id="projectID" name="projectID" value="{{ project.id }}">
-                        <td><input type="text" id="projectName_{{ project.id }}" name="projectName_{{ project.id }}" value="{{ project.name }}" placeholder="Project" autocomplete="off" required></td>
-                        <td><input type="date" id="projectStart_{{ project.id }}" name="projectStart_{{ project.id }}" onchange="minEndDate('{{ project.id }}')" value="{{ project.start_date }}" required></td>
-                        <td><input type="date" id="projectEnd_{{ project.id }}" name="projectEnd_{{ project.id }}" value="{{ project.end_date }}" required></td>
-                        <td>{% for tag in project.tag_list %}<li class="tags">{{ tag }}</li>{% endfor %}</td>
-                        <td>
-                        {% if project.ongoing == True %}
-                                <input type="checkbox" id="projectOngoing_{{ project.id }}" name="projectOngoing_{{ project.id }}" checked>
-                        {% else %}
-                                <input type="checkbox" id="projectOngoing_{{ project.id }}" name="projectOngoing_{{ project.id }}">
-                        {% endif %}
-                                <label for="projectOngoing_{{ project.id }}"></label>
-                        </td>
-                        <td>
-                            <button name="editProject" onclick="return confirmationPopUp(this)">Save</button>
-                            <button name="cancelEdit" type="button" onclick="editProjectFunction('{{ project.id }}', 'projectEdit_{{ project.id }}', 'projectView_{{ project.id }}')">Cancel</button>
-                        </td>
-                    </form>
-                </tr>
-            {% endif %}
-        {% endfor %}
-        
-
-        <!-- New Project -->
+<table id="projectTable">
+    <tr>
+        <th>Name</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Tags</th>
+        <th>Ongoing</th>
         {% if request.user.is_authenticated %}
-            <tr id="projectNew_new">
-                <form action="{% url 'project:projectList' %}" method="POST">
-                    {% csrf_token %}
-                    <td><input type="text" id="projectName_new" name="projectName_new" placeholder="Project" autocomplete="off" required></td>
-                    <td><input type="date" id="projectStart_new" name="projectStart_new" onchange="minEndDate('new')" required></td>
-                    <td><input type="date" id="projectEnd_new" name="projectEnd_new" required></td>
-                    <td></td>
-                    <td>
-                        <input type="checkbox" id="projectOngoing_new" name="projectOngoing_new" checked>
-                        <label for="projectOngoing_new"></label>
-                    </td>
-                    <td><button name="addProject">Add</button></td>
-                </form>
-            </tr>
+        <th>Public</th>
+        <th>Action</th>
         {% endif %}
-    </table>
+    </tr>
+    {% for project in projects %}
 
-    <!-- Pagination -->
-    <div id="pagination">
-        {% for i in pages %}
-            <a href="{% url 'project:projectList' %}?page={{ i }}">{{ i }}</a>
-        {% endfor %}
-    </div>
+    <!-- View Project -->
+    <tr id="projectView_{{ project.id }}">
+        <td><a href="{% url 'project:storyList' pid=project.id %}">{{ project.name }}</a></td>
+        <td>{{ project.start_date }}</td>
+        {% if project.ongoing == True %}<td></td>{% else %}<td>{{ project.end_date }}</td>{% endif %}
+        <td>
+            {% if project.tag_list|length > 0 %}
+            {% for tag in project.tag_list %}<li class="tags">{{ tag }}</li>{% endfor %}
+            {% else %}
+            <li class="tags">none</li>
+            {% endif %}
+        </td>
+        <td>{{ project.ongoing }}</td>
+        {% if request.user.is_authenticated %}
+        <td>{{project.public}}</td>
+        <td>
+            <button name="editProject" type="button"
+                onclick="editProjectFunction('{{ project.id }}', 'projectView_{{ project.id }}', 'projectEdit_{{ project.id }}')">Edit</button>
+            <form action="{% url 'project:projectList' %}" method="POST">
+                {% csrf_token %}
+                <button name="deleteProject" value="{{ project.id }}"
+                    onclick="return confirmationPopUp(this)">Delete</button>
+            </form>
+        </td>
+        {% endif %}
+    </tr>
 
+    <!-- Edit Project -->
     {% if request.user.is_authenticated %}
-        <!-- DOM Handling -->
-        <script>
-            Date.prototype.toDateInputValue = (function() {
-                var local = new Date(this);
-                local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
-                return local.toJSON().slice(0,10);
-            });
-
-            // Default Starting Value
-            document.getElementById("projectStart_new").value = new Date().toDateInputValue();
-            document.getElementById("projectEnd_new").value = new Date().toDateInputValue();
-            function minEndDate(row_id){
-                var startDate = document.getElementById(`projectStart_${row_id}`).value;
-                var endDateElement = document.getElementById(`projectEnd_${row_id}`);
-                endDateElement.min = startDate;
-            }
-            minEndDate('new');
-
-            // Edit Project
-            function editProjectFunction(pid, hide_id, show_id){
-                var hideEle = document.getElementById(hide_id);
-                var showEle = document.getElementById(show_id);
-                hideEle.style.display="none";
-                showEle.style.display="";
-                minEndDate(pid);
-            }
-        </script>
+    <tr id="projectEdit_{{ project.id }}" style="display: none;">
+        <form action="{% url 'project:projectList' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" id="projectID" name="projectID" value="{{ project.id }}">
+            <td><input type="text" id="projectName_{{ project.id }}" name="projectName_{{ project.id }}"
+                    value="{{ project.name }}" placeholder="Project" autocomplete="off" required></td>
+            <td><input type="date" id="projectStart_{{ project.id }}" name="projectStart_{{ project.id }}"
+                    onchange="minEndDate('{{ project.id }}')" value="{{ project.start_date }}" required></td>
+            <td><input type="date" id="projectEnd_{{ project.id }}" name="projectEnd_{{ project.id }}"
+                    value="{{ project.end_date }}" required></td>
+            <td>{% for tag in project.tag_list %}<li class="tags">{{ tag }}</li>{% endfor %}</td>
+            <td>
+                {% if project.ongoing == True %}
+                <input type="checkbox" id="projectOngoing_{{ project.id }}" name="projectOngoing_{{ project.id }}"
+                    checked>
+                {% else %}
+                <input type="checkbox" id="projectOngoing_{{ project.id }}" name="projectOngoing_{{ project.id }}">
+                {% endif %}
+                <label for="projectOngoing_{{ project.id }}"></label>
+            </td>
+            <td>
+                {% if project.public == True %}
+                <input type="checkbox" id="projectPublic_{{ project.id }}" name="projectPublic_{{ project.id }}"
+                    checked>
+                {% else %}
+                <input type="checkbox" id="projectPublic_{{ project.id }}" name="projectPublic_{{ project.id }}">
+                {% endif %}
+                <label for="projectPublic_{{ project.id }}"></label>
+            </td>
+            <td>
+                <button name="editProject" onclick="return confirmationPopUp(this)">Save</button>
+                <button name="cancelEdit" type="button"
+                    onclick="editProjectFunction('{{ project.id }}', 'projectEdit_{{ project.id }}', 'projectView_{{ project.id }}')">Cancel</button>
+            </td>
+        </form>
+    </tr>
     {% endif %}
+    {% endfor %}
+
+
+    <!-- New Project -->
+    {% if request.user.is_authenticated %}
+    <tr id="projectNew_new">
+        <form action="{% url 'project:projectList' %}" method="POST">
+            {% csrf_token %}
+            <td><input type="text" id="projectName_new" name="projectName_new" placeholder="Project" autocomplete="off"
+                    required></td>
+            <td><input type="date" id="projectStart_new" name="projectStart_new" onchange="minEndDate('new')" required>
+            </td>
+            <td><input type="date" id="projectEnd_new" name="projectEnd_new" required></td>
+            <td></td>
+            <td>
+                <input type="checkbox" id="projectOngoing_new" name="projectOngoing_new" checked>
+                <label for="projectOngoing_new"></label>
+            </td>
+            <td>
+                <input type="checkbox" id="projectPublic_new" name="projectPublic_new" checked>
+                <label for="projectPublic_new"></label>
+            </td>
+            <td><button name="addProject">Add</button></td>
+        </form>
+    </tr>
+    {% endif %}
+</table>
+
+<!-- Pagination -->
+<div id="pagination">
+    {% for i in pages %}
+    <a href="{% url 'project:projectList' %}?page={{ i }}">{{ i }}</a>
+    {% endfor %}
+</div>
+
+{% if request.user.is_authenticated %}
+<!-- DOM Handling -->
+<script>
+    Date.prototype.toDateInputValue = (function () {
+        var local = new Date(this);
+        local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+        return local.toJSON().slice(0, 10);
+    });
+
+    // Default Starting Value
+    document.getElementById("projectStart_new").value = new Date().toDateInputValue();
+    document.getElementById("projectEnd_new").value = new Date().toDateInputValue();
+    function minEndDate(row_id) {
+        var startDate = document.getElementById(`projectStart_${row_id}`).value;
+        var endDateElement = document.getElementById(`projectEnd_${row_id}`);
+        endDateElement.min = startDate;
+    }
+    minEndDate('new');
+
+    // Edit Project
+    function editProjectFunction(pid, hide_id, show_id) {
+        var hideEle = document.getElementById(hide_id);
+        var showEle = document.getElementById(show_id);
+        hideEle.style.display = "none";
+        showEle.style.display = "";
+        minEndDate(pid);
+    }
+</script>
+{% endif %}
 {% endblock %}

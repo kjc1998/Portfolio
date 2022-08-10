@@ -1,3 +1,4 @@
+import itertools
 from typing import Dict, List
 from project.models import Project, Story, Tags
 from django.forms.models import model_to_dict
@@ -5,17 +6,25 @@ from django.forms.models import model_to_dict
 
 class MetadataParser:
     def __init__(self):
-        self._projects, self._stories, self._tags = self._get_database_values()
+        self._projects, self._stories, self._tags = [], [], []
         self._metadata = self._get_metadata()
 
-    def _get_database_values(self) -> List:
+    def _get_database_values(self, request) -> List:
         """
         Return list objects of projects' data
         """
         # Tags handling
+        if request.user.is_authenticated:
+            all_projects = Project.objects.all()
+            all_stories = Story.objects.all()
+        else:
+            all_projects = Project.objects.filter(public=True).all()
+            all_stories = list(itertools.chain(
+                *[x.story.all() for x in all_projects]))
+
         project_tag_dict = {}
         stories = []
-        for story in Story.objects.all():
+        for story in all_stories:
             story_dict = model_to_dict(story)
             story_dict["tags"] = []
             for t in story.tags.all():
@@ -26,7 +35,7 @@ class MetadataParser:
             stories.append(story_dict)
 
         projects = []
-        for project in Project.objects.all():
+        for project in all_projects:
             project_dict = model_to_dict(project)
             try:
                 project_dict["tags"] = project_tag_dict[project.id]
@@ -37,12 +46,12 @@ class MetadataParser:
         tags = list(Tags.objects.all().values())
         return projects, stories, tags
 
-    def _is_database_modified(self) -> bool:
+    def _is_database_modified(self, request) -> bool:
         """
         Check if database values have any changes
         and if so, then update self attributes
         """
-        projects, stories, tags = self._get_database_values()
+        projects, stories, tags = self._get_database_values(request)
         if projects == self._projects and stories == self._stories and tags == self._tags:
             return False
         else:
@@ -60,6 +69,7 @@ class MetadataParser:
         for project in self._projects:
             project = project.copy()
             del project["ongoing"]
+            del project["public"]
             project["start_date"] = project["start_date"].strftime("%Y-%m-%d")
             project["end_date"] = project["end_date"].strftime("%Y-%m-%d")
             project_list.append(project)

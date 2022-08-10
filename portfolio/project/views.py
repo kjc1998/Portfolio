@@ -44,6 +44,8 @@ def projectList(request):
                         id=int(project_id)).first()
                     edit_project.name = name
                     edit_project.start_date = start
+
+                    # Ongoing field
                     try:
                         ongoing = field_entries["projectOngoing_"+project_id]
                         edit_project.end_date = datetime.now()
@@ -51,6 +53,12 @@ def projectList(request):
                     except MultiValueDictKeyError:
                         edit_project.end_date = end
                         edit_project.ongoing = False
+
+                    # public field
+                    if field_entries.get("projectPublic_"+project_id):
+                        edit_project.public = True
+                    else:
+                        edit_project.public = False
                     edit_project.save()
                 except IntegrityError:
                     return error_page(request, 422, "This project already existed")
@@ -85,13 +93,21 @@ def projectList(request):
                     if start.date() > end.date():
                         return error_page(request, 400, f"Start date cannot be more than End date")
 
+                    # Ongoing
                     try:
                         ongoing = field_entries["projectOngoing_new"]
                         ongoing = True
                     except MultiValueDictKeyError:
                         ongoing = False
+
+                    # Public
+                    if field_entries.get("projectPublic_new"):
+                        public = True
+                    else:
+                        public = False
+
                     new_project = Project(
-                        name=name, start_date=start, end_date=end, ongoing=ongoing)
+                        name=name, start_date=start, end_date=end, ongoing=ongoing, public=public)
                     new_project.save()
                 except IntegrityError:
                     return error_page(request, 422, "This project already existed")
@@ -102,7 +118,11 @@ def projectList(request):
     database_updates()
 
     # Pagination
-    projects = Project.objects.all().order_by("-start_date")
+    if request.user.is_authenticated:
+        projects = Project.objects.all().order_by("-start_date")
+    else:
+        projects = Project.objects.filter(
+            public=True).all().order_by("-start_date")
     projects_page_list, pages = pagination_handling(projects, 5, request)
 
     # Data Parsing
@@ -192,13 +212,16 @@ def storyList(request, pid):
 
     # Most updated from database
     current_project = Project.objects.get(id=pid)
+    if not current_project.public and not request.user.is_authenticated:
+        return error_page(request, 403, "You need admin's access to enter this page")
 
     # Pagination
     stories = current_project.story.all().order_by("-date")
     story_page_list, pages = pagination_handling(stories, 5, request)
 
     # Data parsing
-    current_project.start_date = current_project.start_date.strftime("%Y-%m-%d")
+    current_project.start_date = current_project.start_date.strftime(
+        "%Y-%m-%d")
     current_project.end_date = current_project.end_date.strftime("%Y-%m-%d")
     for story in story_page_list:
         story.date = story.date.strftime("%Y-%m-%d")
@@ -300,6 +323,9 @@ def storyMain(request, pid, sid):
     # Most updated from database
     current_story = Story.objects.get(id=sid, project=pid)
     current_project = Project.objects.get(id=pid)
+
+    if not current_project.public and not request.user.is_authenticated:
+        return error_page(request, 403, "You need admin's access to enter this page")
 
     # Image handling
     try:

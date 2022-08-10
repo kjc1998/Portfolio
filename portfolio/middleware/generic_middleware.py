@@ -45,7 +45,7 @@ class HttpResponseMiddleware:
             ### Extra Data to be parsed in to template ###
 
             # Metadata handling
-            if self._metadata_instance._is_database_modified():
+            if self._metadata_instance._is_database_modified(request):
                 self._metadata_instance._metadata = self._metadata_instance._get_metadata()
             metadata = copy.deepcopy(self._metadata_instance._metadata)
 

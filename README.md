@@ -9,7 +9,7 @@
 4) Story Page             [Done]
 5) Filter Bar             [Done]
 6) DropBox                [Done]
-6) UI                     [0%]
+6) UI                     [50%]
 7) Cloud Hosting          [0%]
 ```
 
